@@ -1,0 +1,85 @@
+{
+  "score_version": "peaq-fft-masking-mvp-v1",
+  "processing_version": "synthetic-demo-v1",
+  "seed": 20261025,
+  "sample_rate": 48000,
+  "duration_s": 6.0,
+  "playback_db_spl_assumption": 92.0,
+  "numpy_version": "2.5.4",
+  "target_rms": 0.08,
+  "masker_rms": 0.12000000000000001,
+  "relative_level_db": 3.5218251811136247,
+  "conditions": {
+    "correct": {
+      "masked_frame_ratio": 0.03763440860215054,
+      "mean_active_margin_db": 0.5121353197539021,
+      "nmr_total_db": 4.081867647300971,
+      "event_count": 5.0,
+      "min_event_margin_db": -49.151022747201765
+    },
+    "mismatched": {
+      "masked_frame_ratio": 0.043010752688172046,
+      "mean_active_margin_db": 0.7801086152300272,
+      "nmr_total_db": 4.502726983968099,
+      "event_count": 5.0,
+      "min_event_margin_db": -46.23961188101581
+    },
+    "unconditional": {
+      "masked_frame_ratio": 0.0,
+      "mean_active_margin_db": 36.00089669252794,
+      "nmr_total_db": 39.35342670550081,
+      "event_count": 5.0,
+      "min_event_margin_db": -13.69639892761967
+    },
+    "traditional_pink": {
+      "masked_frame_ratio": 0.03225806451612903,
+      "mean_active_margin_db": 0.5325909813457949,
+      "nmr_total_db": 4.227876533612457,
+      "event_count": 5.0,
+      "min_event_margin_db": -48.10324879867064
+    }
+  },
+  "correct_events": [
+    {
+      "start_sample": 0,
+      "end_sample": 51201,
+      "frames": 50,
+      "masked_frames": 1,
+      "masked_ratio": 0.02,
+      "min_margin_db": -43.348688513831455
+    },
+    {
+      "start_sample": 70656,
+      "end_sample": 87041,
+      "frames": 16,
+      "masked_frames": 1,
+      "masked_ratio": 0.0625,
+      "min_margin_db": -49.151022747201765
+    },
+    {
+      "start_sample": 115712,
+      "end_sample": 171009,
+      "frames": 54,
+      "masked_frames": 3,
+      "masked_ratio": 0.05555555555555555,
+      "min_margin_db": -46.15545321335827
+    },
+    {
+      "start_sample": 190464,
+      "end_sample": 206849,
+      "frames": 16,
+      "masked_frames": 0,
+      "masked_ratio": 0.0,
+      "min_margin_db": -41.657885808683176
+    },
+    {
+      "start_sample": 235520,
+      "end_sample": 286721,
+      "frames": 50,
+      "masked_frames": 2,
+      "masked_ratio": 0.04,
+      "min_margin_db": -40.40334571850008
+    }
+  ],
+  "disclaimer": "Proxy scores in the digital domain; not validated against human listening and not a claim of masking effectiveness."
+}

@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2T · 掩蔽声生成演示</title>
+<style>
+  :root {
+    --bg-0: #0d1320;
+    --bg-1: #121a2b;
+    --card: rgba(255, 255, 255, 0.045);
+    --card-border: rgba(255, 255, 255, 0.09);
+    --text-0: #e9edf5;
+    --text-1: #9aa7bd;
+    --text-2: #6b7891;
+    --accent: #6fa8e8;
+    --accent-soft: rgba(111, 168, 232, 0.14);
+    --good: #7fd8c0;
+    --warn: #e8c07f;
+    --radius: 20px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "PingFang SC", "MiSans", "HarmonyOS Sans SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background:
+      radial-gradient(1200px 700px at 80% -10%, rgba(84, 110, 158, 0.22), transparent 60%),
+      radial-gradient(900px 600px at -10% 30%, rgba(70, 100, 130, 0.14), transparent 55%),
+      linear-gradient(180deg, var(--bg-0), var(--bg-1));
+    background-attachment: fixed;
+    color: var(--text-0);
+    min-height: 100vh;
+    line-height: 1.7;
+    letter-spacing: 0.02em;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  header { text-align: center; margin-bottom: 56px; }
+  .badge {
+    display: inline-block; font-size: 12px; color: var(--text-1);
+    border: 1px solid var(--card-border); border-radius: 999px;
+    padding: 4px 14px; margin-bottom: 18px; letter-spacing: 0.12em;
+  }
+  h1 { font-size: 34px; font-weight: 300; letter-spacing: 0.06em; margin-bottom: 10px; }
+  h1 b { font-weight: 600; }
+  .subtitle { color: var(--text-1); font-size: 15px; font-weight: 300; }
+
+  section {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 30px 32px; margin-bottom: 26px;
+  }
+  .step-title { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+  .step-num {
+    font-size: 13px; color: var(--accent); letter-spacing: 0.2em; font-weight: 600;
+  }
+  h2 { font-size: 20px; font-weight: 500; letter-spacing: 0.04em; }
+  .step-desc { color: var(--text-1); font-size: 13.5px; margin-bottom: 20px; }
+
+  .btn {
+    appearance: none; border: 1px solid var(--card-border); background: rgba(255,255,255,0.05);
+    color: var(--text-0); font-size: 14px; font-family: inherit;
+    border-radius: 999px; padding: 10px 22px; cursor: pointer;
+    transition: all .18s ease; letter-spacing: 0.04em;
+  }
+  .btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn.primary {
+    background: linear-gradient(135deg, #5b8fd9, #6fa8e8);
+    border: none; color: #0b1220; font-weight: 600; padding: 12px 30px;
+    box-shadow: 0 6px 24px rgba(91, 143, 217, 0.25);
+  }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.ghost { background: transparent; }
+  .btn.active { border-color: var(--accent); background: var(--accent-soft); }
+
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .chip {
+    font-size: 12px; color: var(--text-1); background: rgba(255,255,255,0.05);
+    border-radius: 999px; padding: 3px 12px;
+  }
+  .chip.warn { color: var(--warn); }
+
+  canvas { width: 100%; height: 110px; display: block; margin-top: 16px;
+    border-radius: 12px; background: rgba(0,0,0,0.18); }
+  canvas.tall { height: 220px; }
+
+  .styles { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .style-card {
+    border: 1px solid var(--card-border); border-radius: 16px;
+    padding: 18px 20px; cursor: pointer; transition: all .18s ease;
+    background: rgba(255,255,255,0.03); position: relative;
+  }
+  .style-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.06); }
+  .style-card.selected {
+    border-color: var(--sc, var(--accent));
+    background: color-mix(in srgb, var(--sc, var(--accent)) 10%, transparent);
+    box-shadow: 0 0 0 1px var(--sc, var(--accent)), 0 8px 30px rgba(0,0,0,0.25);
+  }
+  .style-card .icon { font-size: 26px; margin-bottom: 8px; }
+  .style-card .name { font-size: 16px; font-weight: 600; letter-spacing: 0.04em; }
+  .style-card .desc { font-size: 12.5px; color: var(--text-1); margin-top: 4px; }
+  .style-card .tag {
+    position: absolute; top: 14px; right: 16px; font-size: 11px;
+    color: var(--text-2); border: 1px solid var(--card-border);
+    padding: 1px 8px; border-radius: 999px;
+  }
+
+  .slider-row { display: flex; align-items: center; gap: 16px; margin: 8px 0 4px; }
+  input[type=range] {
+    flex: 1; appearance: none; height: 4px; border-radius: 2px;
+    background: rgba(255,255,255,0.15); outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    appearance: none; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; box-shadow: 0 0 10px rgba(111,168,232,.5);
+  }
+  .slider-val { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--accent); min-width: 86px; text-align: right; }
+
+  .result-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+  .legend { display: flex; gap: 16px; font-size: 12.5px; color: var(--text-1); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+  .note {
+    font-size: 12px; color: var(--text-2); margin-top: 14px; line-height: 1.8;
+  }
+  .note b { color: var(--text-1); font-weight: 500; }
+
+  footer { text-align: center; color: var(--text-2); font-size: 12px; margin-top: 40px; line-height: 2; }
+  details.presets { margin-top: 26px; color: var(--text-1); font-size: 13px; }
+  details.presets summary { cursor: pointer; color: var(--text-1); }
+  details.presets li { margin: 6px 0 6px 18px; }
+
+  #toast {
+    position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%) translateY(20px);
+    background: rgba(20, 28, 44, 0.95); border: 1px solid var(--card-border);
+    color: var(--text-0); padding: 10px 22px; border-radius: 12px; font-size: 13.5px;
+    opacity: 0; pointer-events: none; transition: all .25s ease; max-width: 80vw;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .hidden { display: none !important; }
+  #progress-line { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.08); margin-top: 16px; overflow: hidden; }
+  #progress-line i { display: block; height: 100%; width: 0%; background: var(--accent); transition: width .1s linear; border-radius: 2px; }
+  @media (max-width: 640px) { h1 { font-size: 26px; } section { padding: 22px 18px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="badge">A2T · 概念验证 DEMO </div>
+    <h1>把吵闹的声音，换成<b>恰好盖住它的安静</b></h1>
+    <p class="subtitle">输入一段干扰声 —— 我们为它生成一段独立的环境音掩蔽声。当前为程序化合成演示版。</p>
+  </header>
+
+  <!-- ① 输入目标声 -->
+  <section>
+    <div class="step-title"><span class="step-num">①</span><h2>输入目标声</h2></div>
+    <p class="step-desc">选择一段需要被掩盖的声音：人声、鼾声、街道噪音……或直接使用内置示例。</p>
+    <div class="row">
+      <button class="btn" id="btn-sample">🎧 使用内置示例（鼾声模拟）</button>
+      <button class="btn" id="btn-upload">📂 上传音频文件</button>
+      <button class="btn" id="btn-record">🎙 录制一段声音</button>
+      <input type="file" id="file-input" accept="audio/*" class="hidden">
+    </div>
+    <div id="target-info" class="chips hidden"></div>
+    <canvas id="wave-canvas" class="hidden"></canvas>
+  </section>
+
+  <!-- ② 选择风格 -->
+  <section>
+    <div class="step-title"><span class="step-num">②</span><h2>选择掩蔽声风格</h2></div>
+    <p class="step-desc">生成时会将所选风格的底色，向目标声的主要频带做覆盖整形，并匹配电平。</p>
+    <div class="styles" id="style-grid"></div>
+  </section>
+
+  <!-- ③ 生成 -->
+  <section>
+    <div class="step-title"><span class="step-num">③</span><h2>生成掩蔽声</h2></div>
+    <p class="step-desc">掩蔽声电平默认比目标声高 6 dB，可按场景调整。</p>
+    <div class="slider-row">
+      <span style="font-size:13.5px;color:var(--text-1)">掩蔽声相对电平 ΔL</span>
+      <input type="range" id="dl-slider" min="-6" max="15" step="1" value="6">
+      <span class="slider-val" id="dl-val">+6 dB</span>
+    </div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn primary" id="btn-generate" disabled>✦ 生成掩蔽声</button>
+      <button class="btn ghost hidden" id="btn-regen">🎲 换一种随机纹理</button>
+      <span id="gen-status" style="font-size:13px;color:var(--text-1)"></span>
+    </div>
+    <div id="progress-line" class="hidden"><i></i></div>
+  </section>
+
+  <!-- ④ 结果 -->
+  <section id="result-section" class="hidden">
+    <div class="step-title"><span class="step-num">④</span><h2>试听与下载</h2></div>
+    <p class="step-desc">建议按「目标声 → 掩蔽声 → 混合」的顺序试听。混合仅用于评估。</p>
+    <div class="row">
+      <button class="btn" id="btn-play-target">▶ 目标声</button>
+      <button class="btn" id="btn-play-masker">▶ 掩蔽声</button>
+      <button class="btn" id="btn-play-mix">▶ 混合播放</button>
+      <button class="btn ghost" id="btn-stop">■ 停止</button>
+      <label class="row" style="gap:8px;font-size:13px;color:var(--text-1)">音量
+        <input type="range" id="vol-slider" min="0" max="100" value="70" style="width:120px">
+      </label>
+      <label class="row" style="gap:6px;font-size:13px;color:var(--text-1)">
+        <input type="checkbox" id="loop-toggle" checked> 循环
+      </label>
+      <button class="btn" id="btn-download">⬇ 下载掩蔽声 WAV</button>
+    </div>
+    <canvas id="live-canvas"></canvas>
+    <div class="legend" style="margin-top:10px">
+      <span><i style="background:#e9a87f"></i>目标声频带电平</span>
+      <span><i style="background:#7fb2e5"></i>掩蔽声频带电平</span>
+      <span><i style="background:#7fd8c0"></i>掩蔽声已覆盖该频带</span>
+    </div>
+    <canvas id="band-canvas" class="tall"></canvas>
+    <div class="chips" id="result-chips"></div>
+    <p class="note">
+      <b>阅读提示：</b>上图是目标声与掩蔽声在各频带的电平对照（代理示意）。绿色表示该频带内
+      掩蔽声电平不低于目标声。频带覆盖是必要条件而非充分条件，<b>不能等同于人的干扰感受或掩蔽效果</b>。
+    </p>
+  </section>
+
+  <details class="presets">
+    <summary>演示要点（给展示者）</summary>
+    <ul>
+      <li>顺序：内置示例 → 选「稳定雨声」→ 默认 ΔL +6 dB → 生成 → 依次试听目标声、掩蔽声、混合。</li>
+      <li>换一次「换一种随机纹理」，说明同一目标可生成不同纹理的掩蔽声（种子受控、可复现）。</li>
+      <li>拖动 ΔL 到 −6 再到 +12，配合频带覆盖图讲"电平预算"的概念。</li>
+      <li>口径：这是<b>无训练模型的概念验证</b>——真实的掩蔽声生成模型（潜空间扩散）在研究计划中，
+          本页的"生成"是按目标频谱做覆盖整形的程序化合成；评估图是代理示意，不声称掩蔽效果。</li>
+    </ul>
+  </details>
+
+  <footer>
+    演示版 demo-v0.1 · 程序化合成（Web Audio，本地运行，不上传任何音频） · 处理版本 demo-v0.1 / 评分示意 proxy-v0<br>
+    掩蔽分数是代理指标，不能直接等同于人类干扰、专注效果或助眠效果 · 未校准耳旁声压，仅报告数字域相对电平
+  </footer>
+</div>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ================================================================
+ * A2T masking demo — 全部计算在浏览器本地完成
+ * ================================================================ */
+
+const MAX_SECONDS = 30;          // 只处理前 30 秒
+const FFT_SIZE = 2048;
+const HOP = 512;                 // 4x overlap, WOLA
+const N_BANDS = 28;
+const BAND_LOW = 63, BAND_HIGH = 14000;
+
+/* ---------------- 小工具 ---------------- */
+const $ = (id) => document.getElementById(id);
+let toastTimer = null;
+function toast(msg) {
+  const el = $("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
+}
+
+/* 确定性随机（mulberry32），保证"换一种纹理"可控可复现 */
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ---------------- FFT（radix-2 迭代版） ---------------- */
+const fft = (() => {
+  const N = FFT_SIZE;
+  const rev = new Uint32Array(N);
+  for (let i = 0; i < N; i++) {
+    let r = 0, x = i;
+    for (let b = 0; b < Math.log2(N); b++) { r = (r << 1) | (x & 1); x >>= 1; }
+    rev[i] = r;
+  }
+  const cosT = new Float32Array(N / 2), sinT = new Float32Array(N / 2);
+  for (let i = 0; i < N / 2; i++) {
+    cosT[i] = Math.cos(-2 * Math.PI * i / N);
+    sinT[i] = Math.sin(-2 * Math.PI * i / N);
+  }
+  function transform(re, im, inverse) {
+    for (let i = 0; i < N; i++) {
+      const j = rev[i];
+      if (j > i) { let t = re[i]; re[i] = re[j]; re[j] = t;
+                   t = im[i]; im[i] = im[j]; im[j] = t; }
+    }
+    for (let size = 2; size <= N; size <<= 1) {
+      const half = size >> 1, step = N / size;
+      for (let i = 0; i < N; i += size) {
+        for (let j = i, k = 0; j < i + half; j++, k += step) {
+          const c = cosT[k], s = inverse ? -sinT[k] : sinT[k];
+          const tre = re[j + half] * c - im[j + half] * s;
+          const tim = re[j + half] * s + im[j + half] * c;
+          re[j + half] = re[j] - tre; im[j + half] = im[j] - tim;
+          re[j] += tre; im[j] += tim;
+        }
+      }
+    }
+    if (inverse) for (let i = 0; i < N; i++) { re[i] /= N; im[i] /= N; }
+  }
+  return transform;
+})();
+
+const hann = new Float32Array(FFT_SIZE);
+for (let i = 0; i < FFT_SIZE; i++) hann[i] = 0.5 * (1 - Math.cos(2 * Math.PI * i / FFT_SIZE));
+const HANN_SUMSQ = (() => { let s = 0; for (let i = 0; i < FFT_SIZE; i++) s += hann[i] * hann[i]; return s; })();
+
+/* ---------------- 频带定义 ---------------- */
+const bandEdges = (() => {
+  const r = Math.pow(BAND_HIGH / BAND_LOW, 1 / N_BANDS);
+  const e = [];
+  for (let i = 0; i <= N_BANDS; i++) e.push(BAND_LOW * Math.pow(r, i));
+  return e;
+})();
+const bandCenters = bandEdges.slice(0, -1).map((e, i) => Math.sqrt(e * bandEdges[i + 1]));
+
+function bandPowers(spectrumPower, binHz) {   // spectrumPower: |X|^2 per bin
+  const out = new Float32Array(N_BANDS);
+  const norm = 2 / (FFT_SIZE * HANN_SUMSQ);   // one-sided power estimate
+  for (let b = 0; b < N_BANDS; b++) {
+    let lo = Math.floor(bandEdges[b] / binHz), hi = Math.ceil(bandEdges[b + 1] / binHz);
+    lo = Math.max(1, Math.min(lo, FFT_SIZE / 2 - 1));
+    hi = Math.max(lo + 1, Math.min(hi, FFT_SIZE / 2));
+    let s = 0;
+    for (let k = lo; k < hi; k++) s += spectrumPower[k];
+    out[b] = s * norm * (bandEdges[b + 1] - bandEdges[b]) / ((hi - lo) * binHz);
+  }
+  return out;
+}
+
+/* 平均功率谱：用于分析与图表 */
+function averageSpectrum(samples, sampleRate) {
+  const power = new Float64Array(FFT_SIZE / 2);
+  const re = new Float32Array(FFT_SIZE), im = new Float32Array(FFT_SIZE);
+  if (samples.length < FFT_SIZE) {           // 过短信号：补零做一次谱
+    for (let i = 0; i < samples.length; i++) re[i] = samples[i] * hann[i];
+    fft(re, im, false);
+    for (let k = 0; k < FFT_SIZE / 2; k++) power[k] = re[k] * re[k] + im[k] * im[k];
+    return { power, binHz: sampleRate / FFT_SIZE };
+  }
+  const nFrames = Math.max(8, Math.min(400, Math.floor(samples.length / HOP)));
+  for (let f = 0; f < nFrames; f++) {
+    const start = Math.min(samples.length - FFT_SIZE,
+      Math.floor(f * (samples.length - FFT_SIZE) / Math.max(1, nFrames - 1)));
+    for (let i = 0; i < FFT_SIZE; i++) { re[i] = samples[start + i] * hann[i]; im[i] = 0; }
+    fft(re, im, false);
+    for (let k = 0; k < FFT_SIZE / 2; k++) power[k] += re[k] * re[k] + im[k] * im[k];
+  }
+  for (let k = 0; k < FFT_SIZE / 2; k++) power[k] /= nFrames;
+  return { power, binHz: sampleRate / FFT_SIZE };
+}
+
+function rmsLevel(x) {
+  let s = 0;
+  for (let i = 0; i < x.length; i++) s += x[i] * x[i];
+  return Math.sqrt(s / Math.max(1, x.length));
+}
+const dbfs = (rms) => 10 * Math.log10(Math.max(rms, 1e-9) * Math.max(rms, 1e-9) / 1);
+const dB = (p) => 10 * Math.log10(Math.max(p, 1e-12));
+
+/* ---------------- 风格定义 ---------------- */
+const STYLES = [
+  { id: "rain",   icon: "🌧️", name: "稳定雨声", desc: "连续稳定的雨幕与细密雨滴，无雷声", color: "#7fb2e5" },
+  { id: "stream", icon: "🏞️", name: "连续水流", desc: "溪流般的连续水声，带轻柔的气泡感", color: "#7fd8c8" },
+  { id: "wave",   icon: "🌊", name: "海浪", desc: "缓慢起伏的浪涌与泡沫声（后续扩展预览）", color: "#6f9fd8", tag: "预览" },
+  { id: "wind",   icon: "🍃", name: "风声", desc: "柔和变化的风声，缓慢呼吸般的起伏（预览）", color: "#a8c8a0", tag: "预览" },
+  { id: "pink",   icon: "📀", name: "粉红噪声", desc: "传统基线：每倍频程等功率的平滑噪声", color: "#d8a8c8" },
+  { id: "brown",  icon: "🟤", name: "棕噪声", desc: "传统基线：更低沉厚重的积分噪声", color: "#d8b890" },
+];
+let selectedStyle = "rain";
+
+function buildStyleGrid() {
+  const grid = $("style-grid");
+  STYLES.forEach((s) => {
+    const card = document.createElement("div");
+    card.className = "style-card" + (s.id === selectedStyle ? " selected" : "");
+    card.style.setProperty("--sc", s.color);
+    card.dataset.id = s.id;
+    card.innerHTML = `<div class="icon">${s.icon}</div>
+      <div class="name">${s.name}</div><div class="desc">${s.desc}</div>
+      ${s.tag ? `<div class="tag">${s.tag}</div>` : ""}`;
+    card.onclick = () => {
+      selectedStyle = s.id;
+      document.querySelectorAll(".style-card").forEach((c) =>
+        c.classList.toggle("selected", c.dataset.id === s.id));
+    };
+    grid.appendChild(card);
+  });
+}
+
+/* ---------------- 音频状态 ---------------- */
+let audioCtx = null;
+function ensureCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  return audioCtx;
+}
+
+let target = null;    // { samples: Float32Array, sampleRate, name }
+let masker = null;    // 同上
+let maskerMeta = null;
+let regenCount = 0;
+let currentSource = null;
+let analyser = null;
+
+function downmix(audioBuffer) {
+  const n = Math.min(audioBuffer.length, Math.floor(MAX_SECONDS * audioBuffer.sampleRate));
+  const out = new Float32Array(n);
+  for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
+    const d = audioBuffer.getChannelData(ch);
+    for (let i = 0; i < n; i++) out[i] += d[i] / audioBuffer.numberOfChannels;
+  }
+  return out;
+}
+
+function setTarget(samples, sampleRate, name) {
+  target = { samples, sampleRate, name };
+  const rms = rmsLevel(samples);
+  const chips = $("target-info");
+  chips.classList.remove("hidden");
+  chips.innerHTML = `
+    <span class="chip">来源：${name}</span>
+    <span class="chip">时长 ${(samples.length / sampleRate).toFixed(1)} s</span>
+    <span class="chip">采样率 ${sampleRate} Hz</span>
+    <span class="chip">电平 ${dbfs(rms).toFixed(1)} dBFS RMS</span>
+    ${samples.length < MAX_SECONDS * sampleRate ? "" : `<span class="chip warn">仅取前 ${MAX_SECONDS} s 用于演示</span>`}`;
+  $("wave-canvas").classList.remove("hidden");
+  drawWave($("wave-canvas"), samples);
+  $("btn-generate").disabled = false;
+}
+
+/* ---------------- 输入方式 ---------------- */
+$("btn-sample").onclick = () => {
+  const ctx = ensureCtx();
+  const sr = ctx.sampleRate;
+  const n = Math.floor(6 * sr);
+  const x = new Float32Array(n);
+  const t = (i) => i / sr;
+  // 鼾声模拟：110 Hz 谐波串 + 0.45 Hz 通断包络
+  for (let i = 0; i < n; i++) {
+    const phase = (t(i) * 0.45) % 1.0;
+    let env = phase < 0.42 ? Math.sin(Math.PI * phase / 0.42) : 0;
+    let buzz = 0;
+    for (let h = 1; h <= 8; h++) buzz += Math.sin(2 * Math.PI * 110 * h * t(i)) / h;
+    x[i] = 0.02 * env * buzz;
+  }
+  // 1 kHz 音调突发（展示频带覆盖用）
+  [[1.6, 1.9], [4.1, 4.4]].forEach(([a, b]) => {
+    for (let i = Math.floor(a * sr); i < Math.floor(b * sr) && i < n; i++)
+      x[i] += 0.008 * Math.sin(2 * Math.PI * 1000 * t(i));
+  });
+  const rms = rmsLevel(x);
+  const g = 0.06 / Math.max(rms, 1e-6);
+  for (let i = 0; i < n; i++) x[i] *= g;
+  setTarget(x, sr, "内置示例 · 鼾声模拟");
+  toast("已载入内置示例（6 秒合成鼾声模拟）");
+};
+
+$("btn-upload").onclick = () => $("file-input").click();
+$("file-input").onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const ctx = ensureCtx();
+    const buf = await ctx.decodeAudioData(await file.arrayBuffer());
+    setTarget(downmix(buf), buf.sampleRate, file.name);
+    toast("已载入 " + file.name);
+  } catch (err) {
+    toast("解码失败：请选择常见音频格式（wav / mp3 / m4a / ogg）");
+  }
+  e.target.value = "";
+};
+
+let mediaRecorder = null;
+$("btn-record").onclick = async function () {
+  const btn = this;
+  if (mediaRecorder && mediaRecorder.state === "recording") { mediaRecorder.stop(); return; }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const chunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+    mediaRecorder.onstop = async () => {
+      stream.getTracks().forEach((t) => t.stop());
+      btn.textContent = "🎙 录制一段声音";
+      try {
+        const ctx = ensureCtx();
+        const buf = await ctx.decodeAudioData(await new Blob(chunks).arrayBuffer());
+        setTarget(downmix(buf), buf.sampleRate, "麦克风录音");
+        toast("已载入录音");
+      } catch (e) { toast("录音解码失败"); }
+    };
+    mediaRecorder.start();
+    let left = 10;
+    btn.textContent = `⏺ 录音中… ${left}s（再点一次结束）`;
+    const timer = setInterval(() => {
+      left -= 1;
+      if (left <= 0 || !mediaRecorder || mediaRecorder.state !== "recording") {
+        clearInterval(timer);
+        if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop();
+      } else btn.textContent = `⏺ 录音中… ${left}s（再点一次结束）`;
+    }, 1000);
+  } catch (err) {
+    toast("当前打开方式（file://）不支持录音，请上传文件或使用内置示例");
+  }
+};
+
+/* ---------------- 绘图 ---------------- */
+function setupCanvas(cv) {
+  const dpr = window.devicePixelRatio || 1;
+  const w = cv.clientWidth, h = cv.clientHeight;
+  cv.width = w * dpr; cv.height = h * dpr;
+  const g = cv.getContext("2d");
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { g, w, h };
+}
+
+function drawWave(cv, samples) {
+  const { g, w, h } = setupCanvas(cv);
+  g.clearRect(0, 0, w, h);
+  g.strokeStyle = "rgba(255,255,255,0.08)";
+  g.beginPath(); g.moveTo(0, h / 2); g.lineTo(w, h / 2); g.stroke();
+  g.strokeStyle = "#e9a87f"; g.lineWidth = 1.2; g.beginPath();
+  const step = Math.max(1, Math.floor(samples.length / w / 2));
+  const nPoints = Math.min(w * 2, Math.floor(samples.length / step));
+  for (let p = 0; p < nPoints; p++) {
+    const i = Math.floor(p * samples.length / nPoints);
+    let lo = 1e9, hi = -1e9;
+    for (let j = i; j < Math.min(i + step, samples.length); j += 8) {
+      lo = Math.min(lo, samples[j]); hi = Math.max(hi, samples[j]);
+    }
+    const x = p * w / nPoints;
+    g.moveTo(x, h / 2 - hi * h * 0.45);
+    g.lineTo(x, h / 2 - lo * h * 0.45);
+  }
+  g.stroke();
+  g.fillStyle = "rgba(255,255,255,0.35)"; g.font = "11px sans-serif";
+  g.fillText("目标声波形", 10, 16);
+}
+
+function drawBands(cv, tgtBands, mskBands) {
+  const { g, w, h } = setupCanvas(cv);
+  g.clearRect(0, 0, w, h);
+  const padL = 46, padB = 22, padT = 16;
+  const cw = w - padL - 10, ch = h - padB - padT;
+  const lo = Math.min(-70, ...tgtBands, ...mskBands);
+  const hi = Math.max(-20, ...tgtBands, ...mskBands);
+  const yOf = (v) => padT + ch * (1 - (v - lo) / (hi - lo));
+  // grid
+  const range = hi - lo;
+  const stepDb = range <= 25 ? 5 : 10;
+  g.strokeStyle = "rgba(255,255,255,0.06)"; g.fillStyle = "rgba(255,255,255,0.35)";
+  g.font = "10px sans-serif"; g.textAlign = "right";
+  for (let v = Math.ceil(lo / stepDb) * stepDb; v <= hi; v += stepDb) {
+    g.beginPath(); g.moveTo(padL, yOf(v)); g.lineTo(w - 10, yOf(v)); g.stroke();
+    g.fillText(String(v), padL - 6, yOf(v) + 3);
+  }
+  g.fillText("dB", padL - 6, padT - 4);
+  g.textAlign = "center";
+  const xOf = (i) => padL + cw * (i + 0.5) / N_BANDS;
+  const bw = cw / N_BANDS;
+  // x 轴标签
+  [63, 250, 1000, 4000, 14000].forEach((f) => {
+    let idx = 0;
+    for (let b = 0; b < N_BANDS; b++) if (bandCenters[b] <= f) idx = b;
+    g.fillText(f >= 1000 ? (f / 1000) + "k" : f, xOf(idx), h - 6);
+  });
+  // 目标声柱
+  for (let b = 0; b < N_BANDS; b++) {
+    g.fillStyle = "rgba(233,168,127,0.55)";
+    const y = yOf(tgtBands[b]);
+    g.fillRect(xOf(b) - bw * 0.32, y, bw * 0.64, h - padB - y);
+  }
+  // 掩蔽声折线 + 覆盖高亮
+  g.lineWidth = 2;
+  for (let b = 0; b < N_BANDS; b++) {
+    const covered = mskBands[b] >= tgtBands[b];
+    g.strokeStyle = covered ? "#7fd8c0" : "#7fb2e5";
+    g.fillStyle = covered ? "rgba(127,216,192,0.9)" : "#7fb2e5";
+    if (b < N_BANDS - 1) {
+      g.beginPath(); g.moveTo(xOf(b), yOf(mskBands[b])); g.lineTo(xOf(b + 1), yOf(mskBands[b + 1])); g.stroke();
+    }
+    g.beginPath(); g.arc(xOf(b), yOf(mskBands[b]), 3, 0, Math.PI * 2); g.fill();
+  }
+  const coveredCount = mskBands.filter((m, b) => m >= tgtBands[b]).length;
+  return coveredCount;
+}
+
+/* ---------------- 掩蔽声合成 ---------------- */
+function biquadBandpass(x, sr, f0, Q, gain = 1) {
+  const w0 = 2 * Math.PI * f0 / sr, alpha = Math.sin(w0) / (2 * Q);
+  const b0 = alpha, b1 = 0, b2 = -alpha;
+  const a0 = 1 + alpha, a1 = -2 * Math.cos(w0), a2 = 1 - alpha;
+  const out = new Float32Array(x.length);
+  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  for (let i = 0; i < x.length; i++) {
+    const y = (b0 / a0) * x[i] + (b1 / a0) * x1 + (b2 / a0) * x2 - (a1 / a0) * y1 - (a2 / a0) * y2;
+    x2 = x1; x1 = x[i]; y2 = y1; y1 = y;
+    out[i] = y * gain;
+  }
+  return out;
+}
+
+function coloredNoise(n, color, rnd) {
+  // 时域 IIR 法生成彩色噪声（适合任意长度，无分块伪影）
+  const out = new Float32Array(n);
+  if (color === "white") {
+    for (let i = 0; i < n; i++) out[i] = rnd() * 2 - 1;
+  } else if (color === "pink") {
+    // Paul Kellet 粉红噪声滤波器
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < n; i++) {
+      const w = rnd() * 2 - 1;
+      b0 = 0.99886 * b0 + w * 0.0555179;
+      b1 = 0.99332 * b1 + w * 0.0750759;
+      b2 = 0.96900 * b2 + w * 0.1538520;
+      b3 = 0.86650 * b3 + w * 0.3104856;
+      b4 = 0.55000 * b4 + w * 0.5329522;
+      b5 = -0.7616 * b5 - w * 0.0168980;
+      out[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11;
+      b6 = w * 0.115926;
+    }
+  } else { // brown：泄漏积分
+    let acc = 0;
+    for (let i = 0; i < n; i++) {
+      const w = rnd() * 2 - 1;
+      acc = (acc + 0.02 * w) / 1.02;
+      out[i] = acc * 3.5;
+    }
+  }
+  return out;
+}
+
+/* 生成某种风格的底噪纹理（时间域），不含频带整形 */
+async function synthTexture(styleId, n, sr, seed, onProgress) {
+  const rnd = mulberry32(seed);
+  const x = new Float32Array(n);
+  const chunk = Math.floor(n / 8);
+  if (styleId === "rain") {
+    // 粉红底 + 高频沙沙 + 稳定雨滴瞬态（无雷声）
+    const bed = coloredNoise(n, "pink", rnd);
+    for (let i = 0; i < n; i++) x[i] += bed[i] * 0.8;
+    const hiss = coloredNoise(n, "white", rnd);
+    for (let i = 0; i < n; i++) x[i] += hiss[i] * 0.06;
+    const nDrops = Math.floor((n / sr) * 16);
+    for (let d = 0; d < nDrops; d++) {
+      const start = Math.floor(rnd() * (n - sr * 0.02));
+      const len = Math.floor(sr * (0.002 + rnd() * 0.006));
+      const amp = 0.05 + rnd() * 0.22;
+      const lp = 0.35 + rnd() * 0.4;  // 一阶高通系数
+      let prev = 0, prevIn = 0;
+      for (let i = 0; i < len && start + i < n; i++) {
+        const w = (rnd() * 2 - 1) * Math.exp(-i / (len * 0.35));
+        const hp = w - prevIn + 0.9 * prev;  // 简单一阶高通
+        prevIn = w; prev = hp;
+        x[start + i] += hp * amp;
+      }
+      if (d % 64 === 0) { onProgress && onProgress(0.1 + 0.5 * d / nDrops); await tick(); }
+    }
+  } else if (styleId === "stream") {
+    const bed = coloredNoise(n, "brown", rnd);
+    for (let i = 0; i < n; i++) x[i] += bed[i] * 0.9;
+    // 快速幅度调制的带内水声
+    const bp = biquadBandpass(coloredNoise(n, "white", rnd), sr, 2800, 0.8);
+    let amPhase = 0;
+    for (let i = 0; i < n; i++) {
+      amPhase += (8 + 6 * Math.sin(2 * Math.PI * 0.23 * i / sr)) / sr * 2 * Math.PI * 0.5;
+      const am = 0.55 + 0.45 * Math.sin(amPhase + Math.sin(2 * Math.PI * 1.7 * i / sr));
+      x[i] += bp[i] * 0.5 * am;
+    }
+    // 偶发气泡（短促滑音）
+    const nBub = Math.floor((n / sr) * 2.2);
+    for (let b = 0; b < nBub; b++) {
+      const start = Math.floor(rnd() * (n - sr * 0.15));
+      const len = Math.floor(sr * (0.04 + rnd() * 0.08));
+      const f0 = 300 + rnd() * 700, f1 = f0 * (1.4 + rnd() * 0.8);
+      const amp = 0.05 + rnd() * 0.1;
+      let phase = 0;
+      for (let i = 0; i < len && start + i < n; i++) {
+        const fr = f0 + (f1 - f0) * (i / len);
+        phase += 2 * Math.PI * fr / sr;
+        x[start + i] += Math.sin(phase) * amp * Math.sin(Math.PI * i / len);
+      }
+      if (b % 4 === 0) { onProgress && onProgress(0.1 + 0.5 * b / nBub); await tick(); }
+    }
+  } else if (styleId === "wave") {
+    const bed = coloredNoise(n, "brown", rnd);
+    const hiss = coloredNoise(n, "pink", rnd);
+    const period = 9 + rnd() * 3, phase0 = rnd() * 6.28;
+    for (let i = 0; i < n; i++) {
+      const sw = Math.pow(Math.max(0, Math.sin(2 * Math.PI * i / (sr * period) + phase0)), 2);
+      x[i] += bed[i] * (0.35 + 0.65 * sw) + hiss[i] * 0.10 * sw * sw;
+      if ((i & 0xFFFF) === 0) onProgress && onProgress(0.1 + 0.5 * i / n);
+    }
+    await tick();
+  } else if (styleId === "wind") {
+    const bed = coloredNoise(n, "pink", rnd);
+    // 中心频率缓慢漂移的带通（分段实现，参数连续变化避免爆点）
+    let state = { x1: 0, x2: 0, y1: 0, y2: 0 };
+    const seg = 2048;
+    for (let s = 0; s < n; s += seg) {
+      const ts = s / sr;
+      const f0 = 220 + 480 * (0.5 + 0.5 * Math.sin(2 * Math.PI * 0.11 * ts + 1.3));
+      const w0 = 2 * Math.PI * f0 / sr, alpha = Math.sin(w0) / (2 * 1.1);
+      const a0 = 1 + alpha, a1 = -2 * Math.cos(w0), a2 = 1 - alpha;
+      const b0 = alpha / a0, b1 = 0, b2 = -alpha / a0, na1 = a1 / a0, na2 = a2 / a0;
+      const gust = 0.5 + 0.5 * Math.sin(2 * Math.PI * 0.21 * ts + 0.7);
+      const end = Math.min(n, s + seg);
+      for (let i = s; i < end; i++) {
+        const xn = bed[i];
+        const y = b0 * xn + state.x1 * b1 + state.x2 * b2 - state.y1 * na1 - state.y2 * na2;
+        state.x2 = state.x1; state.x1 = xn; state.y2 = state.y1; state.y1 = y;
+        x[i] = y * (0.4 + 0.6 * gust);
+      }
+      if ((s / seg) % 32 === 0) { onProgress && onProgress(0.1 + 0.5 * s / n); await tick(); }
+    }
+  } else if (styleId === "pink" || styleId === "brown") {
+    const bed = coloredNoise(n, styleId, rnd);
+    x.set(bed);
+  }
+  onProgress && onProgress(0.62);
+  await tick();
+  return x;
+}
+
+function tick() { return new Promise((r) => setTimeout(r, 0)); }
+
+/* STFT 域频带覆盖整形 + 电平匹配 + 软限幅 */
+async function shapeAndMatch(texture, sr, tgtBands, targetRms, dL, onProgress) {
+  const n = texture.length;
+  const texSpectrum = averageSpectrum(texture, sr);
+  const texBands = bandPowers(texSpectrum.power, texSpectrum.binHz);
+  // 目标频带增益：掩蔽声在该带应达到 目标功率 × 10^(dL/10)
+  const gains = new Float32Array(N_BANDS);
+  for (let b = 0; b < N_BANDS; b++) {
+    const want = tgtBands[b] * Math.pow(10, dL / 10);
+    gains[b] = Math.sqrt(want / Math.max(texBands[b], 1e-12));
+  }
+  // 限幅 + 平滑
+  for (let b = 0; b < N_BANDS; b++) gains[b] = Math.min(5.6, Math.max(0.25, gains[b]));
+  const sm = new Float32Array(N_BANDS);
+  for (let b = 0; b < N_BANDS; b++) {
+    const a = gains[Math.max(0, b - 1)], c = gains[Math.min(N_BANDS - 1, b + 1)];
+    sm[b] = 0.25 * a + 0.5 * gains[b] + 0.25 * c;
+  }
+  // 频带增益 -> 每个频率 bin 的插值（最后一带以上做衰减外推，避免越界取值）
+  const binGain = new Float32Array(FFT_SIZE / 2);
+  const binHz = sr / FFT_SIZE;
+  for (let k = 1; k < FFT_SIZE / 2; k++) {
+    const f = k * binHz;
+    let g;
+    if (f <= bandEdges[0]) g = sm[0];
+    else if (f >= bandEdges[N_BANDS - 1]) g = sm[N_BANDS - 1] * 0.7;
+    else {
+      let b = 0;
+      while (b < N_BANDS - 2 && bandEdges[b + 1] < f) b++;
+      const t = (Math.log(f) - Math.log(bandEdges[b])) / (Math.log(bandEdges[b + 1]) - Math.log(bandEdges[b]));
+      g = sm[b] * (1 - t) + sm[b + 1] * t;
+    }
+    binGain[k] = g;
+  }
+  // WOLA: 分析 hann / hop 512 / 综合 hann / 归一 1.5
+  const out = new Float32Array(n);
+  const re = new Float32Array(FFT_SIZE), im = new Float32Array(FFT_SIZE);
+  const nFrames = Math.floor((n - FFT_SIZE) / HOP) + 1;
+  for (let f = 0; f < nFrames; f++) {
+    const start = f * HOP;
+    for (let i = 0; i < FFT_SIZE; i++) { re[i] = texture[start + i] * hann[i]; im[i] = 0; }
+    fft(re, im, false);
+    for (let k = 0; k < FFT_SIZE / 2; k++) {
+      const g = binGain[k];
+      re[k] *= g; im[k] *= g;
+      re[FFT_SIZE - k] = re[k]; im[FFT_SIZE - k] = -im[k];
+    }
+    re[0] *= binGain[0];
+    fft(re, im, true);
+    for (let i = 0; i < FFT_SIZE; i++) out[start + i] += re[i] * hann[i] / 1.5;
+    if (f % 256 === 0) { onProgress && onProgress(0.62 + 0.33 * f / nFrames); await tick(); }
+  }
+  // 电平匹配：masker RMS = target RMS × 10^(dL/20)
+  const wantRms = Math.max(targetRms, 1e-4) * Math.pow(10, dL / 20);
+  const cur = rmsLevel(out);
+  const g2 = wantRms / Math.max(cur, 1e-9);
+  for (let i = 0; i < n; i++) out[i] *= g2;
+  // 软限幅
+  let peak = 0;
+  for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(out[i]));
+  if (peak > 0.98) {
+    const k = 0.98 / peak;
+    for (let i = 0; i < n; i++) out[i] = Math.tanh(out[i] * (1 + 3 * (1 - k))) * 0.98 * (k * 0.6 + 0.4);
+  }
+  onProgress && onProgress(1);
+  return out;
+}
+
+/* ---------------- 生成流程 ---------------- */
+$("dl-slider").oninput = (e) => {
+  const v = Number(e.target.value);
+  $("dl-val").textContent = (v >= 0 ? "+" : "") + v + " dB";
+};
+
+$("btn-generate").onclick = () => generateMasker(false);
+$("btn-regen").onclick = () => generateMasker(true);
+
+async function generateMasker(isRegen) {
+  if (!target) { toast("请先输入目标声"); return; }
+  if (isRegen) regenCount += 1; else regenCount = 0;
+  const seedBase = 20261101;
+  const seed = seedBase + regenCount * 7919;
+
+  $("btn-generate").disabled = true;
+  $("btn-regen").disabled = true;
+  $("gen-status").textContent = "正在合成…";
+  $("progress-line").classList.remove("hidden");
+  const bar = document.querySelector("#progress-line i");
+  const onP = (p) => { bar.style.width = Math.round(p * 100) + "%"; };
+
+  try {
+    await tick();
+    const sr = target.sampleRate;
+    const n = target.samples.length;
+    const style = STYLES.find((s) => s.id === selectedStyle);
+    // 目标频带电平（线性功率）
+    const tgtSpec = averageSpectrum(target.samples, sr);
+    const tgtBands = bandPowers(tgtSpec.power, tgtSpec.binHz);
+    const dL = Number($("dl-slider").value);
+
+    const texture = await synthTexture(selectedStyle, n, sr, seed, onP);
+    const shaped = await shapeAndMatch(texture, sr, tgtBands, rmsLevel(target.samples), dL, onP);
+
+    const ctx = ensureCtx();
+    const buf = ctx.createBuffer(1, n, sr);
+    buf.copyToChannel(shaped, 0);
+    masker = { samples: shaped, sampleRate: sr, name: style.name };
+    maskerMeta = { style: style.name, seed, dL };
+
+    // 结果区
+    $("result-section").classList.remove("hidden");
+    $("btn-regen").classList.remove("hidden");
+    const mSpec = averageSpectrum(shaped, sr);
+    const mBands = bandPowers(mSpec.power, mSpec.binHz);
+    const tgtDb = Array.from(tgtBands, dB), mskDb = Array.from(mBands, dB);
+    const covered = drawBands($("band-canvas"), tgtDb, mskDb);
+
+    const chips = $("result-chips");
+    chips.innerHTML = `
+      <span class="chip">风格：${style.icon} ${style.name}</span>
+      <span class="chip">ΔL ${dL >= 0 ? "+" : ""}${dL} dB</span>
+      <span class="chip">随机种子 ${seed}</span>
+      <span class="chip">时长 ${(n / sr).toFixed(1)} s</span>
+      <span class="chip">电平 ${dbfs(rmsLevel(shaped)).toFixed(1)} dBFS RMS</span>
+      <span class="chip ${covered / N_BANDS > 0.6 ? "" : "warn"}">频带覆盖 ${covered}/${N_BANDS}</span>`;
+    $("gen-status").textContent = "完成 ✓";
+    toast("掩蔽声已生成");
+    $("result-section").scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (err) {
+    console.error(err);
+    toast("生成失败：" + err.message);
+    $("gen-status").textContent = "";
+  } finally {
+    $("btn-generate").disabled = false;
+    $("btn-regen").disabled = false;
+    setTimeout(() => { $("progress-line").classList.add("hidden"); bar.style.width = "0%"; }, 600);
+  }
+}
+
+/* ---------------- 播放 ---------------- */
+function stopPlayback() {
+  if (currentSource) { try { currentSource.stop(); } catch (e) {} currentSource = null; }
+}
+$("btn-stop").onclick = stopPlayback;
+
+function play(which) {
+  if (!audioCtx) ensureCtx();
+  stopPlayback();
+  if (which !== "masker" && !target) { toast("请先输入目标声"); return; }
+  if (which === "masker" && !masker) { toast("请先生成掩蔽声"); return; }
+  const ctx = ensureCtx();
+  const loop = $("loop-toggle").checked;
+  const master = ctx.createGain();
+  master.gain.value = Number($("vol-slider").value) / 100 * 0.9;
+  if (!analyser) { analyser = ctx.createAnalyser(); analyser.fftSize = 2048; }
+  master.connect(analyser); analyser.connect(ctx.destination);
+
+  const sources = [];
+  const mk = (samples, sr) => {
+    const buf = ctx.createBuffer(1, samples.length, sr);
+    buf.copyToChannel(samples, 0);
+    const src = ctx.createBufferSource();
+    src.buffer = buf; src.loop = loop;
+    src.connect(master); src.start();
+    return src;
+  };
+  if (which === "target") sources.push(mk(target.samples, target.sampleRate));
+  else if (which === "masker") sources.push(mk(masker.samples, masker.sampleRate));
+  else {
+    // 混合播放：共同衰减避免削波（仅用于评估）
+    const n = Math.min(target.samples.length, masker.samples.length);
+    const mix = new Float32Array(n);
+    let peak = 0;
+    for (let i = 0; i < n; i++) {
+      mix[i] = target.samples[i] + masker.samples[i];
+      peak = Math.max(peak, Math.abs(mix[i]));
+    }
+    const scale = peak > 0.98 ? 0.98 / peak : 1;
+    if (scale < 1) for (let i = 0; i < n; i++) mix[i] *= scale;
+    sources.push(mk(mix, target.sampleRate));
+    if (scale < 1) toast(`混合播放已共同衰减 ${(20 * Math.log10(scale)).toFixed(1)} dB（仅用于评估）`);
+  }
+  currentSource = { stop: () => sources.forEach((s) => s.stop()) };
+  sources.forEach((s) => s.onended = () => {});
+  drawLive();
+}
+
+$("btn-play-target").onclick = () => play("target");
+$("btn-play-masker").onclick = () => play("masker");
+$("btn-play-mix").onclick = () => play("mix");
+$("vol-slider").oninput = () => {};
+
+function drawLive() {
+  const cv = $("live-canvas");
+  if (!analyser || !currentSource) { const { g, w, h } = setupCanvas(cv); g.clearRect(0, 0, w, h); return; }
+  const { g, w, h } = setupCanvas(cv);
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
+  g.clearRect(0, 0, w, h);
+  const bars = 96;
+  for (let b = 0; b < bars; b++) {
+    const k = Math.floor(Math.pow(b / bars, 2) * (data.length - 1));
+    const v = data[k] / 255;
+    const bh = v * (h - 10);
+    g.fillStyle = `rgba(111,168,232,${0.25 + 0.55 * v})`;
+    g.fillRect(b * w / bars + 1, h - bh, w / bars - 2, bh);
+  }
+  if (currentSource) requestAnimationFrame(drawLive);
+  else { g.clearRect(0, 0, w, h); }
+}
+
+/* ---------------- 下载 ---------------- */
+$("btn-download").onclick = () => {
+  if (!masker) { toast("请先生成掩蔽声"); return; }
+  const sr = masker.sampleRate, n = masker.samples.length;
+  const bytes = new ArrayBuffer(44 + n * 2);
+  const dv = new DataView(bytes);
+  const wstr = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
+  wstr(0, "RIFF"); dv.setUint32(4, 36 + n * 2, true); wstr(8, "WAVE");
+  wstr(12, "fmt "); dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+  dv.setUint32(24, sr, true); dv.setUint32(28, sr * 2, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true);
+  wstr(36, "data"); dv.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++) {
+    const v = Math.max(-1, Math.min(1, masker.samples[i]));
+    dv.setInt16(44 + i * 2, v * 32767, true);
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([bytes], { type: "audio/wav" }));
+  a.download = `a2t_masker_${maskerMeta.style}_${maskerMeta.dL >= 0 ? "+" : ""}${maskerMeta.dL}dB_seed${maskerMeta.seed}.wav`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast("已下载 WAV（16-bit PCM）");
+};
+
+/* ---------------- 初始化 ---------------- */
+buildStyleGrid();
+window.addEventListener("resize", () => {
+  if (target) drawWave($("wave-canvas"), target.samples);
+  if (masker && target) {
+    const sr = target.sampleRate;
+    const t = Array.from(bandPowers(averageSpectrum(target.samples, sr).power, sr / FFT_SIZE), dB);
+    const m = Array.from(bandPowers(averageSpectrum(masker.samples, sr).power, sr / FFT_SIZE), dB);
+    drawBands($("band-canvas"), t, m);
+  }
+});
+</script>
+</body>
+</html>

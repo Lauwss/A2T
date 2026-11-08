@@ -1,0 +1,160 @@
+{
+  "sample_rate": 48000,
+  "duration_s": 1.5,
+  "masker_rms": 0.1,
+  "seed": 20261025,
+  "numpy_version": "2.5.4",
+  "quiet_threshold": [
+    {
+      "freq_hz": 500.0,
+      "threshold_dbfs": -82.91300765834485,
+      "spl_equivalent_db": 5.343228308214066,
+      "eq60_anchor_db": 0.6337608100795783,
+      "delta_db": 4.7094674981344875
+    },
+    {
+      "freq_hz": 1000.0,
+      "threshold_dbfs": -88.91366059662396,
+      "spl_equivalent_db": 1.1732728774807022,
+      "eq60_anchor_db": 0.364,
+      "delta_db": 0.8092728774807022
+    },
+    {
+      "freq_hz": 2000.0,
+      "threshold_dbfs": -92.98148132073159,
+      "spl_equivalent_db": 0.10998693098526258,
+      "eq60_anchor_db": 0.20906310060946035,
+      "delta_db": -0.09907616962419777
+    },
+    {
+      "freq_hz": 4000.0,
+      "threshold_dbfs": -95.9640237413911,
+      "spl_equivalent_db": 0.012788744268652508,
+      "eq60_anchor_db": 0.12007521988033337,
+      "delta_db": -0.10728647561168086
+    },
+    {
+      "freq_hz": 8000.0,
+      "threshold_dbfs": -92.29500513324602,
+      "spl_equivalent_db": -2.491671912960382,
+      "eq60_anchor_db": 0.06896510377622311,
+      "delta_db": -2.5606370167366053
+    }
+  ],
+  "pink_masking_offset": [
+    {
+      "freq_hz": 500.0,
+      "threshold_dbfs": -46.89250455634159,
+      "in_band_power_db": -44.815450526981515,
+      "power_offset_db": -5.087353985999887,
+      "anchor_db": -5.0,
+      "delta_db": -0.08735398599988731
+    },
+    {
+      "freq_hz": 1000.0,
+      "threshold_dbfs": -49.22171488205443,
+      "in_band_power_db": -47.06638852242875,
+      "power_offset_db": -5.165626316265488,
+      "anchor_db": -5.0,
+      "delta_db": -0.16562631626548807
+    },
+    {
+      "freq_hz": 2000.0,
+      "threshold_dbfs": -49.24984875092356,
+      "in_band_power_db": -46.89671901562585,
+      "power_offset_db": -5.363429691937519,
+      "anchor_db": -5.0,
+      "delta_db": -0.36342969193751884
+    },
+    {
+      "freq_hz": 4000.0,
+      "threshold_dbfs": -48.97882711526897,
+      "in_band_power_db": -47.2358242017975,
+      "power_offset_db": -4.753302870111283,
+      "anchor_db": -5.0,
+      "delta_db": 0.24669712988871684
+    }
+  ],
+  "narrowband_masking_offset": {
+    "freq_hz": 1000.0,
+    "masker_width_hz": 100.0,
+    "threshold_dbfs": -38.500334279204154,
+    "in_band_power_db": -26.901689464216375,
+    "power_offset_db": -14.608944771627591,
+    "anchor_db": -5.0,
+    "delta_db": -9.608944771627591
+  },
+  "spreading_slopes": {
+    "points": [
+      {
+        "offset_bark": -3.0,
+        "freq_hz": 186.74159118290302,
+        "threshold_db": 13.935050266527828
+      },
+      {
+        "offset_bark": -2.0,
+        "freq_hz": 285.5926195370501,
+        "threshold_db": 19.97211569686008
+      },
+      {
+        "offset_bark": -1.0,
+        "freq_hz": 390.2819877238653,
+        "threshold_db": 44.75055630710457
+      },
+      {
+        "offset_bark": 1.0,
+        "freq_hz": 625.8994619960137,
+        "threshold_db": 58.59843816895964
+      },
+      {
+        "offset_bark": 2.0,
+        "freq_hz": 761.6442712844816,
+        "threshold_db": 49.71661652036154
+      },
+      {
+        "offset_bark": 3.0,
+        "freq_hz": 912.9592941680065,
+        "threshold_db": 40.92100098895849
+      },
+      {
+        "offset_bark": 4.0,
+        "freq_hz": 1082.9378477176454,
+        "threshold_db": 32.29845668110101
+      }
+    ],
+    "upward_slope_db_per_bark": -8.769555999497895,
+    "downward_slope_db_per_bark": 15.407753020288348,
+    "masker_band_level_db": 63.9566352725618
+  },
+  "forward_masking": [
+    {
+      "delay_ms": 0.0,
+      "margin_db": 16.09660221393842
+    },
+    {
+      "delay_ms": 50.0,
+      "margin_db": 28.91272177988199
+    },
+    {
+      "delay_ms": 150.0,
+      "margin_db": 28.913660680529464
+    },
+    {
+      "delay_ms": 300.0,
+      "margin_db": 28.913660680529464
+    }
+  ],
+  "level_linearity": {
+    "masker_levels_dbfs_rms": [
+      -30.0,
+      -20.0,
+      -10.0
+    ],
+    "threshold_dbfs": [
+      -60.46642798517745,
+      -51.84269745650589,
+      -39.12696186150079
+    ],
+    "growth_db_per_db": 1.0669733061838333
+  }
+}
