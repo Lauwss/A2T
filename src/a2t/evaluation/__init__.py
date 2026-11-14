@@ -15,10 +15,17 @@ from .contracts import (
     RelationRecord,
 )
 from .masking import MaskingEvaluator, MaskingThresholdEvaluator
+from .listening import BlindStimulus, build_blind_set, build_manifest
 from .psychoacoustics import PeaqFftModel
-from .probe import ProbeThreshold, find_probe_threshold
+from .probe import (
+    ProbeThreshold,
+    band_power_at,
+    find_probe_threshold,
+    probe_power_offset_db,
+)
 
 __all__ = [
+    "BlindStimulus",
     "ConditionComparison",
     "EvaluationInput",
     "EventScore",
@@ -29,9 +36,13 @@ __all__ = [
     "PeaqFftModel",
     "ProbeThreshold",
     "RelationRecord",
+    "band_power_at",
+    "build_blind_set",
+    "build_manifest",
     "compare_conditions",
     "find_probe_threshold",
     "narrowband_noise",
     "pink_noise",
+    "probe_power_offset_db",
     "white_noise",
 ]

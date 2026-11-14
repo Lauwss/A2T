@@ -1,0 +1,208 @@
+{
+  "version": 2,
+  "timestamp": "2026-11-13T16:03:52.443Z",
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ZCode/3.18.2 Chrome/152.0.7977.130 Electron/44.7.0 Safari/537.36",
+  "master_gain_percent": 120,
+  "manifest": {
+    "masker": "pink noise",
+    "sample_rate": 48000,
+    "frequencies": [
+      500,
+      1000,
+      2000,
+      4000
+    ],
+    "offsets_db": [
+      -6,
+      0,
+      6,
+      12,
+      18
+    ]
+  },
+  "trials": [
+    {
+      "hz": 500,
+      "label": "C",
+      "file": "f500_C.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 3
+    },
+    {
+      "hz": 500,
+      "label": "E",
+      "file": "f500_E.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 3.5
+    },
+    {
+      "hz": 500,
+      "label": "A",
+      "file": "f500_A.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 2.5
+    },
+    {
+      "hz": 500,
+      "label": "B",
+      "file": "f500_B.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 1.8
+    },
+    {
+      "hz": 500,
+      "label": "D",
+      "file": "f500_D.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 5.5
+    },
+    {
+      "hz": 1000,
+      "label": "C",
+      "file": "f1000_C.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 3.2
+    },
+    {
+      "hz": 1000,
+      "label": "A",
+      "file": "f1000_A.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 2.3
+    },
+    {
+      "hz": 1000,
+      "label": "D",
+      "file": "f1000_D.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 3.5
+    },
+    {
+      "hz": 1000,
+      "label": "E",
+      "file": "f1000_E.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 2.2
+    },
+    {
+      "hz": 1000,
+      "label": "B",
+      "file": "f1000_B.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 8
+    },
+    {
+      "hz": 4000,
+      "label": "B",
+      "file": "f4000_B.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 1.5
+    },
+    {
+      "hz": 4000,
+      "label": "C",
+      "file": "f4000_C.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 2.6
+    },
+    {
+      "hz": 4000,
+      "label": "A",
+      "file": "f4000_A.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 2.4
+    },
+    {
+      "hz": 4000,
+      "label": "D",
+      "file": "f4000_D.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 1.8
+    },
+    {
+      "hz": 4000,
+      "label": "E",
+      "file": "f4000_E.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 2.8
+    },
+    {
+      "hz": 2000,
+      "label": "D",
+      "file": "f2000_D.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 2.7
+    },
+    {
+      "hz": 2000,
+      "label": "B",
+      "file": "f2000_B.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 1.2
+    },
+    {
+      "hz": 2000,
+      "label": "A",
+      "file": "f2000_A.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 2.4
+    },
+    {
+      "hz": 2000,
+      "label": "E",
+      "file": "f2000_E.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 1.4
+    },
+    {
+      "hz": 2000,
+      "label": "C",
+      "file": "f2000_C.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 2.3
+    }
+  ],
+  "boundaries_hz": {
+    "500": {
+      "kind": "boundary",
+      "boundary_dbfs": -37.89,
+      "offset_db": 9
+    },
+    "1000": {
+      "kind": "boundary",
+      "boundary_dbfs": -49.22,
+      "offset_db": 0
+    },
+    "2000": {
+      "kind": "boundary",
+      "boundary_dbfs": -52.25,
+      "offset_db": -3
+    },
+    "4000": {
+      "kind": "boundary",
+      "boundary_dbfs": -39.98,
+      "offset_db": 9
+    }
+  },
+  "disclaimer": "主观听测结果，用于检验模型校准；数字域相对电平，不构成播放安全声明。"
+}

@@ -1,0 +1,40 @@
+{
+  "masker": "pink noise",
+  "sample_rate": 48000,
+  "duration_s": 1.5,
+  "masker_rms": 0.1,
+  "playback_db_spl_assumption": 92.0,
+  "seed": 20261025,
+  "score_version": "peaq-fft-masking-mvp-v1",
+  "thresholds": [
+    {
+      "probe_hz": 500.0,
+      "threshold_dbfs": -46.89250455634159,
+      "threshold_amplitude": 0.004522460394223414,
+      "masker_band_db": -44.815450526981515,
+      "offset_db": -5.087353985999887
+    },
+    {
+      "probe_hz": 1000.0,
+      "threshold_dbfs": -49.22171488205443,
+      "threshold_amplitude": 0.003458710846867424,
+      "masker_band_db": -47.06638852242875,
+      "offset_db": -5.165626316265488
+    },
+    {
+      "probe_hz": 2000.0,
+      "threshold_dbfs": -49.24984875092356,
+      "threshold_amplitude": 0.0034475260976476354,
+      "masker_band_db": -46.89671901562585,
+      "offset_db": -5.363429691937519
+    },
+    {
+      "probe_hz": 4000.0,
+      "threshold_dbfs": -48.97882711526897,
+      "threshold_amplitude": 0.003556793438979109,
+      "masker_band_db": -47.2358242017975,
+      "offset_db": -4.753302870111283
+    }
+  ],
+  "disclaimer": "Model prediction in the digital domain; not a measured human threshold and not a claim about real playback loudness."
+}

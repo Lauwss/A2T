@@ -1,0 +1,201 @@
+{
+  "version": 1,
+  "timestamp": "2026-11-12T17:00:30.908Z",
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.146.0 Chrome/150.0.7871.250 Electron/43.8.6 Safari/537.36",
+  "master_gain_percent": 80,
+  "manifest": {
+    "masker": "pink noise",
+    "sample_rate": 48000,
+    "frequencies": [
+      500,
+      1000,
+      2000,
+      4000
+    ],
+    "offsets_db": [
+      -6,
+      0,
+      6,
+      12,
+      18
+    ]
+  },
+  "trials": [
+    {
+      "hz": 4000,
+      "label": "A",
+      "file": "f4000_A.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 2.8
+    },
+    {
+      "hz": 4000,
+      "label": "D",
+      "file": "f4000_D.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 3
+    },
+    {
+      "hz": 4000,
+      "label": "C",
+      "file": "f4000_C.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 3
+    },
+    {
+      "hz": 4000,
+      "label": "E",
+      "file": "f4000_E.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 3.8
+    },
+    {
+      "hz": 4000,
+      "label": "B",
+      "file": "f4000_B.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 2.2
+    },
+    {
+      "hz": 2000,
+      "label": "B",
+      "file": "f2000_B.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 2.6
+    },
+    {
+      "hz": 2000,
+      "label": "A",
+      "file": "f2000_A.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 2.8
+    },
+    {
+      "hz": 2000,
+      "label": "D",
+      "file": "f2000_D.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 3.1
+    },
+    {
+      "hz": 2000,
+      "label": "C",
+      "file": "f2000_C.wav",
+      "response": "unsure",
+      "played_count": 1,
+      "seconds": 6
+    },
+    {
+      "hz": 2000,
+      "label": "E",
+      "file": "f2000_E.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 2.5
+    },
+    {
+      "hz": 500,
+      "label": "C",
+      "file": "f500_C.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 2.7
+    },
+    {
+      "hz": 500,
+      "label": "E",
+      "file": "f500_E.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 7.5
+    },
+    {
+      "hz": 500,
+      "label": "A",
+      "file": "f500_A.wav",
+      "response": "unsure",
+      "played_count": 1,
+      "seconds": 5.8
+    },
+    {
+      "hz": 500,
+      "label": "B",
+      "file": "f500_B.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 1.4
+    },
+    {
+      "hz": 500,
+      "label": "D",
+      "file": "f500_D.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 2.3
+    },
+    {
+      "hz": 1000,
+      "label": "E",
+      "file": "f1000_E.wav",
+      "response": "yes",
+      "played_count": 1,
+      "seconds": 1.6
+    },
+    {
+      "hz": 1000,
+      "label": "A",
+      "file": "f1000_A.wav",
+      "response": "unsure",
+      "played_count": 1,
+      "seconds": 9.2
+    },
+    {
+      "hz": 1000,
+      "label": "C",
+      "file": "f1000_C.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 7.2
+    },
+    {
+      "hz": 1000,
+      "label": "B",
+      "file": "f1000_B.wav",
+      "response": "no",
+      "played_count": 1,
+      "seconds": 2.8
+    },
+    {
+      "hz": 1000,
+      "label": "D",
+      "file": "f1000_D.wav",
+      "response": "unsure",
+      "played_count": 1,
+      "seconds": 3.8
+    }
+  ],
+  "boundaries_hz": {
+    "500": {
+      "offset_db": -31.89
+    },
+    "1000": {
+      "capped": "above",
+      "offset_db": -31.22
+    },
+    "2000": {
+      "offset_db": -34.25
+    },
+    "4000": {
+      "offset_db": -33.98
+    }
+  },
+  "disclaimer": "主观听测结果，用于检验模型校准；数字域相对电平，不构成播放安全声明。"
+}

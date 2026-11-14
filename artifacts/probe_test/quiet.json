@@ -1,0 +1,33 @@
+{
+  "masker": "silence",
+  "sample_rate": 48000,
+  "duration_s": 1.5,
+  "masker_rms": 0.0,
+  "playback_db_spl_assumption": 92.0,
+  "seed": 20261025,
+  "score_version": "peaq-fft-masking-mvp-v1",
+  "thresholds": [
+    {
+      "probe_hz": 500.0,
+      "threshold_dbfs": -82.91300765834485,
+      "threshold_amplitude": 7.150717436918885e-05,
+      "masker_band_db": null,
+      "offset_db": null
+    },
+    {
+      "probe_hz": 1000.0,
+      "threshold_dbfs": -88.91366059662396,
+      "threshold_amplitude": 3.583578894675798e-05,
+      "masker_band_db": null,
+      "offset_db": null
+    },
+    {
+      "probe_hz": 4000.0,
+      "threshold_dbfs": -95.9640237413911,
+      "threshold_amplitude": 1.591471306623774e-05,
+      "masker_band_db": null,
+      "offset_db": null
+    }
+  ],
+  "disclaimer": "Model prediction in the digital domain; not a measured human threshold and not a claim about real playback loudness."
+}

@@ -13,7 +13,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from .psychoacoustics import PeaqFftModel
+from .psychoacoustics import PeaqFftModel, ear_weight_db
 
 NEIGHBOR_BANDS = 2
 
@@ -52,6 +52,28 @@ def _probe_margin(
     lo = max(0, center_band - NEIGHBOR_BANDS)
     hi = min(model.n_bands, center_band + NEIGHBOR_BANDS + 1)
     return float(np.max(np.median(margins[lo:hi, :], axis=1)))
+
+
+def band_power_at(model: PeaqFftModel, signal: np.ndarray, freq_hz: float) -> float:
+    """Mean model band energy at ``freq_hz`` mapped to physical mean-square power.
+
+    Band energies carry the model's playback scaling ``fac`` and the ear
+    weighting, so both are divided out; the result is in the same units as the
+    input signal's mean-square power and can be compared with the probe power
+    ``amplitude**2 / 2``.
+    """
+    energy = model.band_energy(model.spectrum(np.asarray(signal, dtype=float)))
+    band = int(np.argmin(np.abs(model.center_hz - freq_hz)))
+    weight = 10.0 ** (float(ear_weight_db(model.center_hz[band])) / 10.0)
+    return float(energy[band, :].mean()) / (model.fac**2 * weight)
+
+
+def probe_power_offset_db(threshold_amplitude: float, band_power: float) -> float:
+    """Probe power at threshold relative to the masker's power in its band."""
+    return float(
+        10.0
+        * np.log10(max(threshold_amplitude**2 / 2.0, 1e-30) / max(band_power, 1e-30))
+    )
 
 
 def find_probe_threshold(

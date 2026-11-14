@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A2T 听觉阈值听测</title>
+<style>
+  :root {
+    --ink: #1c2330; --muted: #6b7686; --line: #dde3ec;
+    --accent: #2563eb; --accent-dark: #1e46a8; --ok: #15803d; --warn: #b45309; --bad: #b91c1c;
+    --bg: #f5f7fa; --card: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 64px; background: var(--bg); color: var(--ink);
+    font: 15px/1.6 system-ui, "Segoe UI", "Microsoft YaHei", sans-serif;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 17px; margin: 0 0 12px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 20px; margin-bottom: 16px;
+  }
+  ul { margin: 8px 0; padding-left: 20px; }
+  li { margin: 4px 0; }
+  button {
+    font: inherit; padding: 10px 22px; border-radius: 8px; border: 1px solid var(--line);
+    background: #fff; color: var(--ink); cursor: pointer;
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  button.primary:hover:not(:disabled) { background: var(--accent-dark); color: #fff; }
+  button.yes   { border-color: var(--ok);   color: var(--ok);   font-weight: 600; }
+  button.unsure{ border-color: var(--warn); color: var(--warn); font-weight: 600; }
+  button.no    { border-color: var(--bad);  color: var(--bad);  font-weight: 600; }
+  button.answered.yes   { background: var(--ok);   color: #fff; }
+  button.answered.unsure{ background: var(--warn); color: #fff; }
+  button.answered.no    { background: var(--bad);  color: #fff; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin: 14px 0; }
+  .bar > div { height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+  .trial-meta { color: var(--muted); font-size: 14px; margin-top: 12px; }
+  .trial-hz { font-size: 30px; font-weight: 700; margin: 2px 0 6px; }
+  .trial-label { display: inline-block; background: #eef2ff; color: var(--accent-dark);
+    border-radius: 6px; padding: 2px 10px; font-weight: 600; font-size: 14px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 10px 0; }
+  th, td { border: 1px solid var(--line); padding: 6px 10px; text-align: center; }
+  th { background: #f0f3f8; }
+  td.l { text-align: left; }
+  .verdict-good { color: var(--ok); font-weight: 600; }
+  .verdict-warn { color: var(--warn); font-weight: 600; }
+  .verdict-bad  { color: var(--bad); font-weight: 600; }
+  .note { color: var(--muted); font-size: 13px; }
+  .hidden { display: none; }
+  details { margin: 10px 0; }
+  summary { cursor: pointer; color: var(--accent); }
+  #toast {
+    position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
+    background: var(--ink); color: #fff; padding: 10px 18px; border-radius: 8px;
+    font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .25s; max-width: 80vw;
+  }
+  #toast.show { opacity: 0.95; }
+  input[type=range] { width: 220px; }
+  .big { font-size: 20px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>听觉阈值听测</h1>
+  <div class="sub" id="sub">检验掩蔽阈值模型预测的边界和你耳朵听到的边界是否一致。全程约 5–8 分钟。</div>
+
+  <!-- 说明 -->
+  <section id="screen-intro" class="card">
+    <h2>测试流程</h2>
+    <ul>
+      <li>每个题目播放一段噪声，噪声里<b>可能</b>藏着一个纯音。</li>
+      <li>你判断能不能听到这个纯音：<b>听到了</b> / <b>不确定</b> / <b>没听到</b>。</li>
+      <li>共 20 题（4 个频率 × 5 个电平）。顺序已随机打乱。</li>
+      <li>做完后页面直接给出结果：你的真实阈值和模型预测差多少 dB。</li>
+    </ul>
+    <h2>听测条件</h2>
+    <ul>
+      <li>安静房间，关闭风扇和空调。</li>
+      <li>用<b>头戴耳机</b>，不要用音箱。</li>
+      <li>整个测试音量<b>保持不变</b>。中途改音量会让数据失效。</li>
+      <li>判断标准：这个纯音「总体上能不能察觉」。忽隐忽现算能察觉。</li>
+      <li>实验前不要打开 answers.json（答案表）。</li>
+    </ul>
+    <div class="row" style="margin-top:16px">
+      <button id="btn-start" class="primary">开始</button>
+      <span id="resume-box" class="hidden">
+        <button id="btn-resume">继续上次进度</button>
+        <button id="btn-discard">放弃重来</button>
+      </span>
+    </div>
+    <div id="load-error" class="note" style="color:var(--bad)"></div>
+  </section>
+
+  <!-- 音量校准 -->
+  <section id="screen-calib" class="card hidden">
+    <h2>第 0 步：校准音量</h2>
+    <p>先听纯噪声（没有纯音）。把系统音量调到：<b>噪声清晰可闻，长时间听也不吵</b>的水平。</p>
+    <div class="row">
+      <button id="btn-calib-play">播放噪声</button>
+      <button id="btn-calib-stop" disabled>停止</button>
+      <span class="note">页面音量 <input type="range" id="gain" min="0" max="200" value="100"> <span id="gain-val">100%</span></span>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="btn-practice">播放练习音（噪声 + 明显的 1 kHz 纯音）</button>
+      <span class="note">练习音都听不清纯音 = 音量太低或设备链路有问题，先解决再测</span>
+    </div>
+    <p class="note">这个滑块只改变你听到的响度，按等比例缩放所有文件，不影响相对关系。</p>
+    <div class="row" style="margin-top:14px">
+      <label><input type="checkbox" id="calib-done"> 音量已调好，测试期间不再改动</label>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button id="btn-begin-trials" class="primary" disabled>进入测试</button>
+    </div>
+  </section>
+
+  <!-- 答题 -->
+  <section id="screen-test" class="card hidden">
+    <div class="bar"><div id="progress"></div></div>
+    <div class="trial-meta"><span id="trial-idx"></span> · 频率与标签如下</div>
+    <div class="trial-hz"><span id="trial-hz"></span> Hz <span class="trial-label" id="trial-label"></span></div>
+    <p class="note">噪声里藏着一个纯音。循环播放，仔细听，然后回答。</p>
+    <div class="row">
+      <button id="btn-play">▶ 播放</button>
+      <button id="btn-stop" disabled>■ 停止</button>
+    </div>
+    <div class="row" style="margin-top:16px">
+      <button id="r-yes" class="yes" disabled>听到了</button>
+      <button id="r-unsure" class="unsure" disabled>不确定</button>
+      <button id="r-no" class="no" disabled>没听到</button>
+    </div>
+    <div class="row" style="margin-top:18px">
+      <button id="btn-prev">← 上一题（可改答案）</button>
+      <button id="btn-finish" class="primary">提前结束并看结果</button>
+    </div>
+    <p class="note" id="test-note">回答后自动进入下一题。答题前必须先播放。</p>
+  </section>
+
+  <!-- 结果 -->
+  <section id="screen-results" class="card hidden">
+    <h2>结果</h2>
+    <p class="note">边界 = 你刚好能听到纯音的电平，相对模型预测阈值（0 dB）的偏移。</p>
+    <div id="results-table"></div>
+    <div id="results-verdict"></div>
+    <h2 style="margin-top:20px">怎么解读</h2>
+    <ul>
+      <li>边界在 <b>±3 dB</b> 内：模型校准和你的听感一致。</li>
+      <li>边界 <b>&lt; 0</b>：你在模型说「听不见」的电平还能听见 → 模型<b>高估掩蔽</b>。</li>
+      <li>边界 <b>&gt; 0</b>：模型说「听得见」的电平你其实听不见 → 模型<b>低估掩蔽</b>。</li>
+      <li>四个频率边界<b>整体平移</b>同一个数：多半是播放音量和 92 dB 假设的差，不是模型错。看「频率间离散度」。</li>
+      <li>边界贴到 ±6 dB 的边：刺激电平范围不够，用 <code>--offsets</code> 扩大范围重测。</li>
+    </ul>
+    <details><summary>查看答案表（做完才看）</summary><div id="answers-table"></div></details>
+    <div class="row" style="margin-top:16px">
+      <button id="btn-save" class="primary">保存结果</button>
+      <button id="btn-download">下载 JSON</button>
+      <button id="btn-restart">重新测试</button>
+    </div>
+    <p class="note" id="save-note"></p>
+  </section>
+
+  <div id="toast"></div>
+</div>
+
+<script>
+"use strict";
+
+const RESPONSES = { yes: "听到了", unsure: "不确定", no: "没听到" };
+const SCORE = { yes: 1.0, unsure: 0.5, no: 0.0 };
+
+const els = {};
+["sub","screen-intro","screen-calib","screen-test","screen-results","resume-box",
+ "btn-start","btn-resume","btn-discard","load-error","btn-calib-play","btn-calib-stop","btn-practice",
+ "gain","gain-val","calib-done","btn-begin-trials","progress","trial-idx","trial-hz",
+ "trial-label","btn-play","btn-stop","r-yes","r-unsure","r-no","btn-prev","btn-finish",
+ "test-note","results-table","results-verdict","answers-table","btn-save","btn-download",
+ "btn-restart","save-note","toast"].forEach(id => els[id] = document.getElementById(id));
+
+const app = {
+  manifest: null,
+  audioCtx: null,
+  buffers: new Map(),   // filename -> AudioBuffer
+  masterGain: null,
+  source: null,
+  trials: [],           // {hz, label, file}
+  index: 0,
+  answers: {},          // file -> {response, played, seconds}
+  trialStart: 0,
+  playedCurrent: false,
+  storageKey: null,
+  playedCalib: false,
+};
+
+function toast(msg) {
+  els["toast"].textContent = msg;
+  els["toast"].classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => els["toast"].classList.remove("show"), 2600);
+}
+
+function showScreen(name) {
+  for (const s of ["intro","calib","test","results"])
+    els["screen-" + s].classList.toggle("hidden", s !== name);
+}
+
+function storageKeyFor(manifest) {
+  const text = JSON.stringify(manifest);
+  let h = 0;
+  for (let i = 0; i < text.length; i++) { h = (h * 31 + text.charCodeAt(i)) | 0; }
+  return "a2t-listening-" + h;
+}
+
+function fmtHz(hz) { return Number(hz).toString(); }
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function saveState() {
+  const data = {
+    index: app.index,
+    answers: app.answers,
+    trials: app.trials.map(t => ({ hz: t.hz, label: t.label, file: t.file })),
+  };
+  localStorage.setItem(app.storageKey, JSON.stringify(data));
+}
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(app.storageKey)); }
+  catch { return null; }
+}
+
+function clearState() { localStorage.removeItem(app.storageKey); }
+
+function buildTrials(manifest) {
+  const trials = [];
+  for (const freq of shuffle(manifest.frequencies))
+    for (const st of shuffle(freq.stimuli))
+      trials.push({ hz: freq.hz, label: st.label, file: st.file });
+  return trials;
+}
+
+function ensureAudio() {
+  if (!app.audioCtx) {
+    app.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    app.masterGain = app.audioCtx.createGain();
+    app.masterGain.connect(app.audioCtx.destination);
+    setGain();
+  }
+  if (app.audioCtx.state === "suspended") app.audioCtx.resume();
+}
+
+function setGain() {
+  if (app.masterGain)
+    app.masterGain.gain.value = Math.pow(Number(els["gain"].value) / 100, 2);
+}
+
+async function loadBuffers(files, onProgress) {
+  for (let i = 0; i < files.length; i++) {
+    const name = files[i];
+    const res = await fetch(name);
+    if (!res.ok) throw new Error(`加载 ${name} 失败（HTTP ${res.status}）`);
+    const buf = await res.arrayBuffer();
+    const audio = await app.audioCtx.decodeAudioData(buf);
+    app.buffers.set(name, audio);
+    onProgress(i + 1, files.length);
+  }
+}
+
+function playBuffer(buffer) {
+  ensureAudio();
+  stopPlayback();
+  const src = app.audioCtx.createBufferSource();
+  src.buffer = buffer;
+  src.loop = true;
+  src.connect(app.masterGain);
+  src.start();
+  app.source = src;
+}
+
+function playFile(name) {
+  playBuffer(app.buffers.get(name));
+}
+
+// Masker plus a clearly audible 1 kHz tone (~20 dB above the model threshold),
+// mixed in the browser: verifies the audio chain and sets the listener's
+// expectation of what "audible" sounds like before the blind trials start.
+function buildPracticeBuffer() {
+  const base = app.buffers.get(app.manifest.masker_only);
+  if (!base) throw new Error("masker buffer not loaded");
+  const out = app.audioCtx.createBuffer(1, base.length, base.sampleRate);
+  const src = base.getChannelData(0);
+  const dst = out.getChannelData(0);
+  const rate = base.sampleRate;
+  const nFade = Math.min(Math.round(0.02 * rate), base.length >> 1);
+  for (let i = 0; i < base.length; i++) {
+    const t = i / rate;
+    let env = 1.0;
+    if (i < nFade) env = i / nFade;
+    else if (i > base.length - nFade) env = (base.length - i) / nFade;
+    dst[i] = src[i] + 0.1 * Math.sin(2.0 * Math.PI * 1000.0 * t) * env;
+  }
+  return out;
+}
+
+function stopPlayback() {
+  if (app.source) {
+    try { app.source.stop(); } catch {}
+    app.source.disconnect();
+    app.source = null;
+  }
+}
+
+function renderTrial() {
+  const t = app.trials[app.index];
+  els["trial-idx"].textContent = `第 ${app.index + 1} / ${app.trials.length} 题`;
+  els["trial-hz"].textContent = fmtHz(t.hz);
+  els["trial-label"].textContent = `标签 ${t.label}`;
+  const pct = Math.round((app.index / app.trials.length) * 100);
+  els["progress"].style.width = pct + "%";
+  const prev = app.answers[t.file];
+  for (const r of ["yes","unsure","no"])
+    els["r-" + r].classList.toggle("answered", prev && prev.response === r);
+  const playable = !!app.buffers.get(t.file);
+  els["btn-play"].disabled = !playable;
+  els["btn-stop"].disabled = true;
+  for (const r of ["yes","unsure","no"]) els["r-" + r].disabled = true;
+  app.playedCurrent = false;
+  els["btn-prev"].disabled = app.index === 0;
+}
+
+function respond(response) {
+  if (!app.playedCurrent) return;
+  const t = app.trials[app.index];
+  app.answers[t.file] = {
+    hz: t.hz, label: t.label, file: t.file, response,
+    played: (app.answers[t.file] && app.answers[t.file].played || 0) + 1,
+    seconds: Math.round((performance.now() - app.trialStart) / 100) / 10,
+  };
+  saveState();
+  stopPlayback();
+  if (app.index + 1 >= app.trials.length) { finish(); return; }
+  app.index += 1;
+  renderTrial();
+}
+
+function verdictFor(offsetDb, kind) {
+  if (kind !== "boundary" || offsetDb == null || !isFinite(offsetDb))
+    return { cls: "verdict-warn", text: "边界超出刺激范围" };
+  const x = offsetDb;
+  if (Math.abs(x) <= 3) return { cls: "verdict-good", text: "一致（±3 dB 内）" };
+  if (x < 0) return { cls: "verdict-bad", text: `模型高估掩蔽（${x.toFixed(1)} dB）` };
+  return { cls: "verdict-bad", text: `模型低估掩蔽（+${x.toFixed(1)} dB）` };
+}
+
+// Boundary rule (v2): midpoint between the highest level answered "no" and the
+// lowest level answered "yes". "Unsure" is shown but excluded, so one lapse at
+// a quiet level cannot drag the estimate. Matches scripts/rescore_listening.py.
+// v1 matched responses by LABEL across all frequencies -- labels collide, so
+// every frequency got scored with the first frequency's answers (fixed here).
+function boundaryFor(levels, answers, fileByLabel) {
+  const pts = Object.keys(levels)
+    .map(label => {
+      const file = fileByLabel[label];
+      const a = file ? answers[file] : null;
+      return { level: levels[label], label, response: a ? a.response : null };
+    })
+    .filter(p => p.response)
+    .sort((a, b) => a.level - b.level);
+  if (!pts.length) return { kind: "empty" };
+  const heard = pts.filter(p => p.response === "yes").map(p => p.level);
+  const unheard = pts.filter(p => p.response === "no").map(p => p.level);
+  if (!heard.length) return { kind: "capped-above", level: pts[pts.length - 1].level };
+  if (!unheard.length) return { kind: "capped-below", level: pts[0].level };
+  return {
+    kind: "boundary",
+    level: (Math.max(...unheard) + Math.min(...heard)) / 2,
+    highestUnheard: Math.max(...unheard),
+    lowestHeard: Math.min(...heard),
+  };
+}
+
+async function finish() {
+  stopPlayback();
+  saveState();
+  let answersJson;
+  try {
+    const res = await fetch("answers.json");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    answersJson = await res.json();
+  } catch (e) {
+    toast("读取 answers.json 失败：" + e.message + "。请通过 listening_server.py 打开本页面。");
+    return;
+  }
+  renderResults(answersJson);
+  showScreen("results");
+}
+
+function renderResults(answersJson) {
+  els["btn-save"].disabled = false;
+  els["btn-save"].textContent = "保存结果";
+  const freqs = app.manifest.frequencies;
+  const boundaries = {};
+  let rows = "";
+  for (const freq of freqs) {
+    const hzKey = fmtHz(freq.hz);
+    const levels = (answersJson.levels && answersJson.levels[hzKey]) || null;
+    rows += `<tr><th colspan="3" class="l">${fmtHz(freq.hz)} Hz</th></tr>`;
+    if (!levels) {
+      rows += `<tr><td colspan="3" class="note l">答案表缺少 ${hzKey} Hz 的电平</td></tr>`;
+      continue;
+    }
+    const fileByLabel = Object.fromEntries(freq.stimuli.map(s => [s.label, s.file]));
+    const thr = answersJson.model_threshold_dbfs ? answersJson.model_threshold_dbfs[hzKey] : null;
+    const b = boundaryFor(levels, app.answers, fileByLabel);
+    const off = (b.level != null && thr != null) ? b.level - thr : null;
+    boundaries[hzKey] = { kind: b.kind, boundary_dbfs: b.level ?? null, offset_db: off };
+    const v = verdictFor(off, b.kind);
+    for (const st of freq.stimuli) {
+      const a = app.answers[st.file];
+      const level = levels[st.label];
+      const resp = a ? RESPONSES[a.response] : "—";
+      rows += `<tr><td class="l">标签 ${st.label}</td><td>${level == null ? "?" :
+        level.toFixed(1) + " dBFS"}</td><td>${resp}</td></tr>`;
+    }
+    let boundaryText;
+    if (b.kind === "boundary") {
+      boundaryText = `${b.level.toFixed(1)} dBFS（最后没听到 ${b.highestUnheard.toFixed(1)} · ` +
+        `首次听到 ${b.lowestHeard.toFixed(1)}` +
+        (off != null ? `，相对模型 ${off >= 0 ? "+" : ""}${off.toFixed(1)} dB` : "") + "）";
+    } else if (b.kind === "capped-above" || b.kind === "capped-below") {
+      boundaryText = `${b.kind === "capped-above" ? "≥" : "≤"} ${b.level.toFixed(1)} dBFS（贴边）`;
+    } else {
+      boundaryText = "无有效回答";
+    }
+    rows += `<tr><td class="l"><b>边界</b></td><td colspan="2" class="${v.cls}">${boundaryText} · ${v.text}</td></tr>`;
+  }
+  els["results-table"].innerHTML =
+    `<table><tr><th class="l">刺激</th><th>实际电平</th><th>你的回答</th></tr>${rows}</table>`;
+
+  const valid = Object.values(boundaries)
+    .filter(b => b.kind === "boundary" && b.offset_db != null)
+    .map(b => b.offset_db);
+  let verdictHtml = "";
+  if (valid.length) {
+    const mean = valid.reduce((s, v) => s + v, 0) / valid.length;
+    const spread = valid.length > 1 ? Math.sqrt(
+      valid.reduce((s, v) => s + (v - mean) * (v - mean), 0) / (valid.length - 1)) : 0;
+    verdictHtml += `<p>平均边界偏移 <b class="big">${mean >= 0 ? "+" : ""}${mean.toFixed(1)} dB</b>，` +
+      `频率间离散度（标准差）<b>${spread.toFixed(1)} dB</b>。</p>`;
+    if (spread <= 3 && Math.abs(mean) <= 3)
+      verdictHtml += `<p class="verdict-good">整体校准良好。</p>`;
+    else if (spread <= 3)
+      verdictHtml += `<p class="verdict-warn">离散度小但整体偏移 ${mean.toFixed(1)} dB：` +
+        (mean < 0 ? "模型整体高估掩蔽" : "模型整体低估掩蔽，或播放音量低于 92 dB 假设（会把边界整体推高）") + `。</p>`;
+    else
+      verdictHtml += `<p class="verdict-bad">离散度大（${spread.toFixed(1)} dB）：偏差随频率变化，` +
+        "指向模型频带相关的偏差（如外中耳加权或扩展核），不是音量问题。</p>";
+  } else {
+    verdictHtml += `<p class="verdict-warn">有效边界不足：回答数太少或全部贴边。</p>`;
+  }
+  verdictHtml += `<p class="note">本结果是你在当前设备、当前音量下的听测数据，` +
+    "用于检验模型校准；不构成对任何播放安全性的声明。</p>";
+  els["results-verdict"].innerHTML = verdictHtml;
+
+  const ansRows = Object.keys(answersJson.levels || {}).map(hzKey =>
+    `<tr><th class="l">${hzKey} Hz</th>${Object.keys(answersJson.levels[hzKey]).map(label =>
+      `<td>${label} = ${answersJson.levels[hzKey][label].toFixed(1)}</td>`).join("")}</tr>`).join("");
+  els["answers-table"].innerHTML = `<table><tr><th class="l">频率</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr>${ansRows}</table>`;
+
+  app.resultJson = buildResultJson(answersJson, boundaries);
+}
+
+function buildResultJson(answersJson, boundaries) {
+  const trials = app.trials.map(t => {
+    const a = app.answers[t.file] || {};
+    return {
+      hz: t.hz, label: t.label, file: t.file,
+      response: a.response || null,
+      played_count: a.played || 0,
+      seconds: a.seconds || null,
+    };
+  });
+  return {
+    version: 2,
+    timestamp: new Date().toISOString(),
+    user_agent: navigator.userAgent,
+    master_gain_percent: Number(els["gain"].value),
+    manifest: {
+      masker: app.manifest.masker,
+      sample_rate: app.manifest.sample_rate,
+      frequencies: app.manifest.frequencies.map(f => f.hz),
+      offsets_db: (answersJson.offsets_db || []),
+    },
+    trials,
+    boundaries_hz: boundaries,
+    disclaimer: "主观听测结果，用于检验模型校准；数字域相对电平，不构成播放安全声明。",
+  };
+}
+
+async function saveResults() {
+  if (!app.resultJson) return;
+  try {
+    const res = await fetch("/results", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(app.resultJson),
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const out = await res.json();
+    els["btn-save"].disabled = true;
+    els["btn-save"].textContent = "已保存";
+    els["save-note"].textContent = `已保存到 artifacts/listening_test/${out.saved}`;
+  } catch (e) {
+    els["save-note"].textContent = `服务器保存失败（${e.message}），请用「下载 JSON」手动保存。`;
+  }
+}
+
+function downloadResults() {
+  if (!app.resultJson) return;
+  const blob = new Blob([JSON.stringify(app.resultJson, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "listening_results.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ---------------------------------------------------------------- events
+els["gain"].addEventListener("input", () => {
+  els["gain-val"].textContent = els["gain"].value + "%";
+  setGain();
+});
+
+els["btn-start"].addEventListener("click", () => {
+  ensureAudio();
+  showScreen("calib");
+});
+
+els["btn-resume"].addEventListener("click", () => {
+  const saved = loadState();
+  if (!saved) return;
+  app.trials = saved.trials;
+  app.answers = saved.answers || {};
+  app.index = Math.min(saved.index, app.trials.length - 1);
+  showScreen("test");
+  renderTrial();
+});
+
+els["btn-discard"].addEventListener("click", () => {
+  clearState();
+  els["resume-box"].classList.add("hidden");
+  els["btn-start"].disabled = false;
+});
+
+els["btn-calib-play"].addEventListener("click", async () => {
+  ensureAudio();
+  playFile(app.manifest.masker_only);
+  app.playedCalib = true;
+  els["btn-calib-stop"].disabled = false;
+  els["btn-calib-play"].disabled = true;
+  checkCalib();
+});
+
+els["btn-calib-stop"].addEventListener("click", () => {
+  stopPlayback();
+  els["btn-calib-stop"].disabled = true;
+  els["btn-calib-play"].disabled = false;
+});
+
+els["btn-practice"].addEventListener("click", () => {
+  try {
+    playBuffer(buildPracticeBuffer());
+  } catch (e) {
+    toast("练习音生成失败：" + e.message);
+    return;
+  }
+  app.playedCalib = true;
+  els["btn-calib-stop"].disabled = false;
+  els["btn-calib-play"].disabled = true;
+  checkCalib();
+});
+
+els["calib-done"].addEventListener("change", checkCalib);
+
+function checkCalib() {
+  els["btn-begin-trials"].disabled = !(app.playedCalib && els["calib-done"].checked);
+}
+
+els["btn-begin-trials"].addEventListener("click", () => {
+  stopPlayback();
+  app.index = 0;
+  app.trials = buildTrials(app.manifest);
+  app.answers = {};
+  saveState();
+  showScreen("test");
+  renderTrial();
+});
+
+els["btn-play"].addEventListener("click", () => {
+  const t = app.trials[app.index];
+  playFile(t.file);
+  app.playedCurrent = true;
+  app.trialStart = performance.now();
+  els["btn-stop"].disabled = false;
+  for (const r of ["yes","unsure","no"]) els["r-" + r].disabled = false;
+});
+
+els["btn-stop"].addEventListener("click", () => {
+  stopPlayback();
+  els["btn-stop"].disabled = true;
+  els["btn-play"].disabled = false;
+});
+
+for (const r of ["yes","unsure","no"])
+  els["r-" + r].addEventListener("click", () => respond(r));
+
+els["btn-prev"].addEventListener("click", () => {
+  stopPlayback();
+  if (app.index > 0) { app.index -= 1; renderTrial(); }
+});
+
+els["btn-finish"].addEventListener("click", () => {
+  const answered = Object.keys(app.answers).length;
+  if (answered < app.trials.length &&
+      !confirm(`还有 ${app.trials.length - answered} 题未答，确定提前结束？`)) return;
+  finish();
+});
+
+els["btn-save"].addEventListener("click", saveResults);
+els["btn-download"].addEventListener("click", downloadResults);
+
+els["btn-restart"].addEventListener("click", () => {
+  clearState();
+  app.answers = {};
+  app.index = 0;
+  showScreen("calib");
+});
+
+// ---------------------------------------------------------------- boot
+(async function boot() {
+  try {
+    const res = await fetch("manifest.json");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    app.manifest = await res.json();
+  } catch (e) {
+    els["load-error"].textContent =
+      `读取 manifest.json 失败（${e.message}）。请运行 ` +
+      `scripts/listening_server.py 启动本地服务，不要直接双击打开本文件。`;
+    els["btn-start"].disabled = true;
+    return;
+  }
+  app.storageKey = storageKeyFor(app.manifest);
+  const nTrials = app.manifest.frequencies.reduce((s, f) => s + f.stimuli.length, 0);
+  els["sub"].textContent =
+    `${app.manifest.masker || "掩蔽声"} · ${app.manifest.frequencies.length} 个频率 · ` +
+    `${nTrials} 题 · ${app.manifest.sample_rate} Hz · 检验掩蔽阈值模型的真实程度`;
+
+  const saved = loadState();
+  if (saved && saved.trials && Object.keys(saved.answers || {}).length > 0) {
+    els["resume-box"].classList.remove("hidden");
+  }
+
+  // preload all audio in the background so trials start instantly
+  try {
+    ensureAudio();
+    const files = [app.manifest.masker_only];
+    for (const f of app.manifest.frequencies)
+      for (const st of f.stimuli) files.push(st.file);
+    await loadBuffers(files, (i, n) => {
+      els["btn-start"].textContent = `加载刺激 ${i}/${n}`;
+      if (i === n) els["btn-start"].textContent = "开始";
+    });
+  } catch (e) {
+    els["load-error"].textContent = "音频加载失败：" + e.message;
+    els["btn-start"].disabled = true;
+  }
+})();
+</script>
+</body>
+</html>

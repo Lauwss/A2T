@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "masker": "pink noise",
+  "sample_rate": 48000,
+  "masker_only": "masker_only.wav",
+  "responses": [
+    "yes",
+    "unsure",
+    "no"
+  ],
+  "frequencies": [
+    {
+      "hz": 500.0,
+      "stimuli": [
+        {
+          "file": "f500_A.wav",
+          "label": "A"
+        },
+        {
+          "file": "f500_B.wav",
+          "label": "B"
+        },
+        {
+          "file": "f500_C.wav",
+          "label": "C"
+        },
+        {
+          "file": "f500_D.wav",
+          "label": "D"
+        },
+        {
+          "file": "f500_E.wav",
+          "label": "E"
+        }
+      ]
+    },
+    {
+      "hz": 1000.0,
+      "stimuli": [
+        {
+          "file": "f1000_A.wav",
+          "label": "A"
+        },
+        {
+          "file": "f1000_B.wav",
+          "label": "B"
+        },
+        {
+          "file": "f1000_C.wav",
+          "label": "C"
+        },
+        {
+          "file": "f1000_D.wav",
+          "label": "D"
+        },
+        {
+          "file": "f1000_E.wav",
+          "label": "E"
+        }
+      ]
+    },
+    {
+      "hz": 2000.0,
+      "stimuli": [
+        {
+          "file": "f2000_A.wav",
+          "label": "A"
+        },
+        {
+          "file": "f2000_B.wav",
+          "label": "B"
+        },
+        {
+          "file": "f2000_C.wav",
+          "label": "C"
+        },
+        {
+          "file": "f2000_D.wav",
+          "label": "D"
+        },
+        {
+          "file": "f2000_E.wav",
+          "label": "E"
+        }
+      ]
+    },
+    {
+      "hz": 4000.0,
+      "stimuli": [
+        {
+          "file": "f4000_A.wav",
+          "label": "A"
+        },
+        {
+          "file": "f4000_B.wav",
+          "label": "B"
+        },
+        {
+          "file": "f4000_C.wav",
+          "label": "C"
+        },
+        {
+          "file": "f4000_D.wav",
+          "label": "D"
+        },
+        {
+          "file": "f4000_E.wav",
+          "label": "E"
+        }
+      ]
+    }
+  ]
+}

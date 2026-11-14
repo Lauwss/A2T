@@ -153,10 +153,109 @@ p=0.4 幂和归一化对局部化激励的压低所致。**已记录为局限**�
 ## 7. 复现命令
 
 ```bash
-.venv/Scripts/python.exe -m pytest tests/ -q          # 36 passed
+.venv/Scripts/python.exe -m pytest tests/ -q          # 47 passed
 .venv/Scripts/python.exe scripts/validate_masking_threshold.py   # E1-E6
 .venv/Scripts/python.exe scripts/demo_masking_mvp.py             # 四条件 demo
 ```
+
+### 7.1 可调探针测试与盲听导出（2026-11-09 新增）
+
+`scripts/probe_test.py` 用任意掩蔽声跑探针实验，并可导出一组盲听刺激：
+
+```bash
+# 粉红噪声掩蔽，四个探针频率
+.venv/Scripts/python.exe scripts/probe_test.py
+
+# 窄带掩蔽（复现 E3）
+.venv/Scripts/python.exe scripts/probe_test.py --masker narrowband \
+    --narrow-center 1000 --narrow-width 100 --freqs 1000
+
+# 用真实 WAV 掩蔽声（按其自身采样率分析，>= 36 kHz）
+.venv/Scripts/python.exe scripts/probe_test.py --masker file \
+    --masker-file Datasets/rain.wav --freqs 1000,2000 --export artifacts/probe_test
+```
+
+`--export DIR` 写出 `masker_only.wav`、每个频点 5 个电平档（阈值 ±6 dB，
+标签 A–E 随机分配）、不含电平信息的 `manifest.json` 和答案表
+`answers.json`。听测方法：安静房间、头戴耳机、固定音量，按 A–E 顺序
+播放，记录纯音首次出现的标签，再对照答案表；校准良好的模型把这条边界
+放在 0 dB 档。若五档全部可闻或全部不可闻，说明偏差超过 ±6 dB，可用
+`--offsets` 扩大范围（例如 `-18,-12,-6,0,6`）。
+
+数值自检结果：粉红噪声四频点偏移与 E2 完全一致；窄带 1 kHz 偏移
+−14.60 dB 与 E3 的 −14.61 dB 一致；静音听阈换算 SPL 与 E1 一致；
+导出的 20 个 WAV 实测探针电平与答案表相差 ≤ 0.003 dB。
+
+### 7.2 听测前端（2026-11-13 新增）
+
+`demo/listening_test.html` + `scripts/listening_server.py` 提供图形化
+盲听测试：页面加载 `manifest.json`（只含文件名与标签，不含电平），
+逐题循环播放刺激并记录 听到了/不确定/没听到，结束后取回 `answers.json`
+自动计算每个频率的听测边界（0.5 概率插值），与模型预测（0 dB）比较，
+并区分「整体偏移（多为播放音量与 92 dB 假设之差）」与
+「频率间离散度大（指向模型频带相关偏差）」。
+
+```bash
+.venv/Scripts/python.exe scripts/listening_server.py --dir artifacts/probe_test --open
+# 浏览器打开 http://127.0.0.1:8765/ ，按页面指引完成 20 题
+# 结果自动保存到 artifacts/listening_test/listening_results_<时间戳>.json
+```
+
+解读规则：边界 ≈ 0 dB 为校准一致；边界 < 0 为模型高估掩蔽（模型说
+听不见的电平人耳仍能听见）；边界 > 0 为模型低估掩蔽。进度存于
+浏览器 localStorage，中途刷新可继续。换掩蔽声后需重新跑
+`probe_test.py --export`（manifest 变化会使旧进度失效）。
+
+校准页含**练习音**按钮：页面内合成掩蔽声 + 明显可闻的 1 kHz 纯音
+（约高于模型阈值 20 dB），用于验证音频链路并建立听感预期；
+练习音听不清即音量或设备问题，应先排除再进入盲听。
+
+**首轮听测记录（2026-11-13）**：粉红噪声掩蔽、档位 −6/0/+6/+3/+6
+（见 `artifacts/listening_test/listening_results_20261113_005104.json`），
+20/20 回答「没听到」，四频率边界均 ≥ +6 dB 贴上边。每题仅播放一次
+（2–4 s），无「不确定」回答（无假阳性）。解读（按可能性排序）：
+(1) 理想检测阈值与未训练听者 50% 检测点的差距（文献常规 5–10 dB，
+且短时单次播放进一步降低检出率）；(2) 播放音量低于 92 dB 假设——
+注意掩蔽限制检测下均匀音量缩放不改变相对边界，只有差距大到约
+40 dB 以上（纯音接近真实静音听阈）才会显著推高边界；(3) 模型整体
+偏差 ≥ 6 dB（与 E1/E2 锚点矛盾，未排除）。首轮只能给出边界下界。
+**第二轮规程**：`probe_test.py --export --offsets=-6,0,6,12,18` 扩大
+电平范围，校准页先播练习音确认链路，每题建议循环播放 2–3 个周期
+再作答，可用「不确定」作中档回答。
+
+**二轮听测记录（2026-11-13）**：档位 −6/0/+6/+12/+18
+（`artifacts/listening_test/listening_results_20261113_010043.json`）。
+20 题回答分布：8 no / 7 yes / 5 unsure。修正后的边界（页面 v1 评分
+有跨频率标签匹配 bug，显示值错误；用 `scripts/rescore_listening.py`
+对原始作答重算，结果存于脚本输出）：500 Hz +9.0 dB、1 kHz +12.0 dB、
+2 kHz +6.0 dB、4 kHz +15.0 dB，**平均 +10.5 dB，标准差 3.9 dB**。
+解读：(1) 听者 50% 检测点比模型（理想检测器）边界高约 6–15 dB，
+量级与"未训练听者比理想阈值钝 5–10 dB + 单次短时播放"的文献预期
+相容，模型作为绝对预测器对未训练听者偏乐观约 10 dB，作为排序指标
+不受影响的证据仍在积累；(2) 2 kHz 最接近理想（+6），4 kHz 偏差最大
+（+15），但单次会话 n=5/频点，频率依赖性尚不能下结论；(3) 两个
+−6 dB 档的「不确定」为疑似 lapse，按规则剔除出边界计算；(4) 每题仍
+只播放一次（1.4–9.2 s），响应噪声是主要误差源。**评分规则 v2**：
+边界 = 最高「没听到」档与最低「听到了」档的中点，「不确定」剔除；
+结果 JSON 升级为 version 2（含 boundaries_hz.kind/boundary_dbfs/
+offset_db）；answers.json 新增 model_threshold_dbfs 供页面换算偏移。
+
+**三轮听测记录（2026-11-14）**：同二轮刺激
+（`artifacts/listening_test/listening_results_20261114_000358.json`，
+页面 v2 评分）。作答单调性明显改善：500 Hz **+9.0 dB（与二轮完全
+一致，复现）**、4 kHz +9.0 dB（二轮 +15）、2 kHz −3.0 dB（低于模型
+预测）、1 kHz 非单调（−6 档答"听到了"而 0/+6 档答"没听到"，疑为
+−6 档假阳性或 0/+6 档 lapse；rescore 脚本标记 inverted 并剔出
+均值）。有效均值 +5.0 dB（sd 6.9，n=3）。两轮合并估计：模型边界对
+未训练听者偏乐观约 **5–10 dB**；500 Hz 两轮完全复现；单频会话间
+波动可达 9 dB（2 kHz +6 → −3）。混杂因素：三轮前听者已被告知二轮
+结果（期望偏置，协议失误）、页面增益 80%→120%、深夜时段、每题仍
+单次播放（played_count 全为 1）。**结论**：yes/no 盲听在单会话下
+无法分离标准偏置与灵敏度，继续重复收益递减；采纳 **+10 dB 未训练
+听者余量**作为文档化工程校准（评估解读用，不写入模型内），如需
+可发表级数字再升级 2AFC 双间隔强迫选择协议。工程修复：页面保存
+按钮防重复点击；rescore_listening.py 新增非单调检测（inverted 标
+记并剔出均值，含回归测试）。61 tests pass。
 
 依赖变化：`pyproject.toml` 新增 `numpy>=2.0`（BSD-3 许可），已装入 `.venv`
 （2.5.4）。无训练数据引入，无许可风险。
