@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-17 01:49:07",
+  "checkpoint": "BEATs_iter3.pt (pretrained, AS2M)",
+  "license": "unilm code MIT; checkpoint license statement see beats_README.md",
+  "device": "cuda",
+  "input_spec": {
+    "sample_rate": 16000,
+    "channels": 1,
+    "range": "[-1,1]"
+  },
+  "samples": [
+    {
+      "source_id": "fsd50k_379754",
+      "category": "rain_stable",
+      "length_16k": 221066
+    },
+    {
+      "source_id": "fsd50k_379905",
+      "category": "water_flow",
+      "length_16k": 437101
+    }
+  ],
+  "patch_counts": [
+    688,
+    1360
+  ],
+  "frames_per_patch_16k": [
+    321.3,
+    321.4
+  ],
+  "embed_dim": 768,
+  "padding_mask_max_feature_diff": [
+    0.6712395548820496,
+    6.67572021484375e-06
+  ],
+  "determinism_max_diff": 0.0,
+  "nan_count": 0,
+  "verdict": {
+    "padding_mask_ok": false,
+    "deterministic": true,
+    "nan_free": true
+  }
+}
