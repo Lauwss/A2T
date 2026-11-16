@@ -5,8 +5,9 @@ __pycache__/
 .venv/
 *.egg-info/
 
-# 数据目录（大型音频/特征文件不入库）
-Datasets/
+# 数据目录（大型音频/特征文件不入库；tools 子目录单独跟踪，将迁往私有仓库）
+Datasets/*
+!Datasets/tools
 
 # OS
 Thumbs.db
