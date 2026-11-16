@@ -1,13 +1,18 @@
 """Source-aware metadata contracts used before slicing and feature caching."""
 
 from dataclasses import dataclass
-from enum import StrEnum
+from enum import Enum
 
 
-class DatasetSplit(StrEnum):
+class DatasetSplit(str, Enum):
+    """Backport of enum.StrEnum (Python 3.11+) so the bird env (3.10) can import."""
+
     TRAIN = "train"
     VALIDATION = "validation"
     TEST = "test"
+
+    def __str__(self) -> str:
+        return self.value
 
 
 @dataclass(frozen=True)
