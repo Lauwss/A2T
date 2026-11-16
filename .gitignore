@@ -11,3 +11,5 @@ Datasets/
 # OS
 Thumbs.db
 .DS_Store
+swanlog/
+artifacts/dac_roundtrip/samples/

@@ -1,0 +1,230 @@
+{
+  "run_id": "dac_roundtrip_20261117_010605",
+  "date": "2026-11-17 01:06:09",
+  "model": "dac_24khz_8kbps_0.0.4 (MIT, Descript)",
+  "device": "cuda",
+  "results": [
+    {
+      "source_id": "fsd50k_136690",
+      "category": "rain_stable",
+      "input_sample_rate": 44100,
+      "model_sample_rate": 24000,
+      "channels": 1,
+      "samples_in": 192000,
+      "duration_s": 8.0,
+      "z_shape": [
+        1,
+        1024,
+        600
+      ],
+      "z_dtype": "torch.float32",
+      "z_scale": {
+        "min": -21.9726,
+        "max": 22.0606,
+        "mean": 0.0436,
+        "std": 4.3438
+      },
+      "codes_shape": [
+        1,
+        32,
+        600
+      ],
+      "codes_dtype": "torch.int64",
+      "codebook_size": 1024,
+      "n_codebooks": 32,
+      "active_codebooks": 32,
+      "downsample_ratio": 320,
+      "si_snr_db": 3.15,
+      "log_spectral_distance_db": 7.6,
+      "loudness_in_lufs": -47.11,
+      "loudness_out_lufs": -47.07,
+      "output_peak": 0.0314,
+      "output_clipping": false
+    },
+    {
+      "source_id": "fsd50k_347303",
+      "category": "rain_stable",
+      "input_sample_rate": 44100,
+      "model_sample_rate": 24000,
+      "channels": 1,
+      "samples_in": 365760,
+      "duration_s": 15.24,
+      "z_shape": [
+        1,
+        1024,
+        1143
+      ],
+      "z_dtype": "torch.float32",
+      "z_scale": {
+        "min": -20.3367,
+        "max": 19.5784,
+        "mean": 0.0202,
+        "std": 4.2659
+      },
+      "codes_shape": [
+        1,
+        32,
+        1143
+      ],
+      "codes_dtype": "torch.int64",
+      "codebook_size": 1024,
+      "n_codebooks": 32,
+      "active_codebooks": 32,
+      "downsample_ratio": 320,
+      "si_snr_db": -16.55,
+      "log_spectral_distance_db": 7.52,
+      "loudness_in_lufs": -28.89,
+      "loudness_out_lufs": -29.57,
+      "output_peak": 0.9961,
+      "output_clipping": false
+    },
+    {
+      "source_id": "fsd50k_238013",
+      "category": "rain_stable",
+      "input_sample_rate": 44100,
+      "model_sample_rate": 24000,
+      "channels": 1,
+      "samples_in": 529280,
+      "duration_s": 22.053,
+      "z_shape": [
+        1,
+        1024,
+        1654
+      ],
+      "z_dtype": "torch.float32",
+      "z_scale": {
+        "min": -20.6003,
+        "max": 19.9943,
+        "mean": 0.0084,
+        "std": 4.0701
+      },
+      "codes_shape": [
+        1,
+        32,
+        1654
+      ],
+      "codes_dtype": "torch.int64",
+      "codebook_size": 1024,
+      "n_codebooks": 32,
+      "active_codebooks": 32,
+      "downsample_ratio": 320,
+      "si_snr_db": 3.02,
+      "log_spectral_distance_db": 7.56,
+      "loudness_in_lufs": -30.76,
+      "loudness_out_lufs": -30.8,
+      "output_peak": 0.2808,
+      "output_clipping": false
+    },
+    {
+      "source_id": "fsd50k_141702",
+      "category": "water_flow",
+      "input_sample_rate": 44100,
+      "model_sample_rate": 24000,
+      "channels": 1,
+      "samples_in": 192000,
+      "duration_s": 8.0,
+      "z_shape": [
+        1,
+        1024,
+        600
+      ],
+      "z_dtype": "torch.float32",
+      "z_scale": {
+        "min": -19.9399,
+        "max": 22.5611,
+        "mean": 0.0113,
+        "std": 4.28
+      },
+      "codes_shape": [
+        1,
+        32,
+        600
+      ],
+      "codes_dtype": "torch.int64",
+      "codebook_size": 1024,
+      "n_codebooks": 32,
+      "active_codebooks": 32,
+      "downsample_ratio": 320,
+      "si_snr_db": -6.28,
+      "log_spectral_distance_db": 7.61,
+      "loudness_in_lufs": -30.48,
+      "loudness_out_lufs": -30.83,
+      "output_peak": 0.5694,
+      "output_clipping": false
+    },
+    {
+      "source_id": "fsd50k_360673",
+      "category": "water_flow",
+      "input_sample_rate": 44100,
+      "model_sample_rate": 24000,
+      "channels": 1,
+      "samples_in": 338240,
+      "duration_s": 14.093,
+      "z_shape": [
+        1,
+        1024,
+        1057
+      ],
+      "z_dtype": "torch.float32",
+      "z_scale": {
+        "min": -22.0015,
+        "max": 22.8613,
+        "mean": 0.0892,
+        "std": 4.8906
+      },
+      "codes_shape": [
+        1,
+        32,
+        1057
+      ],
+      "codes_dtype": "torch.int64",
+      "codebook_size": 1024,
+      "n_codebooks": 32,
+      "active_codebooks": 32,
+      "downsample_ratio": 320,
+      "si_snr_db": -26.33,
+      "log_spectral_distance_db": 8.19,
+      "loudness_in_lufs": -38.82,
+      "loudness_out_lufs": -39.26,
+      "output_peak": 0.5698,
+      "output_clipping": false
+    },
+    {
+      "source_id": "fsd50k_84623",
+      "category": "water_flow",
+      "input_sample_rate": 44100,
+      "model_sample_rate": 24000,
+      "channels": 1,
+      "samples_in": 505600,
+      "duration_s": 21.067,
+      "z_shape": [
+        1,
+        1024,
+        1580
+      ],
+      "z_dtype": "torch.float32",
+      "z_scale": {
+        "min": -21.6443,
+        "max": 20.6936,
+        "mean": 0.0116,
+        "std": 4.2738
+      },
+      "codes_shape": [
+        1,
+        32,
+        1580
+      ],
+      "codes_dtype": "torch.int64",
+      "codebook_size": 1024,
+      "n_codebooks": 32,
+      "active_codebooks": 32,
+      "downsample_ratio": 320,
+      "si_snr_db": -21.73,
+      "log_spectral_distance_db": 7.56,
+      "loudness_in_lufs": -29.26,
+      "loudness_out_lufs": -29.92,
+      "output_peak": 0.998,
+      "output_clipping": false
+    }
+  ]
+}
