@@ -1,0 +1,795 @@
+{
+  "note": "场景->推荐掩蔽声先验,提取自 Softly 场景页的「推荐声音」标题区间。这是该站的编辑观点,不是掩蔽效果的证据;仅作为掩蔽关系集的初始候选假设。",
+  "source": "softly.cc /zh/sounds-for/* (crawled 2026-11-16)",
+  "mapping": [
+    {
+      "scenario": "adhd-overwhelm",
+      "source_url": "https://softly.cc/zh/sounds-for/adhd-overwhelm/",
+      "recommended_maskers": [
+        "brown_noise",
+        "lofi_music",
+        "pink_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "admin",
+      "source_url": "https://softly.cc/zh/sounds-for/admin/",
+      "recommended_maskers": [
+        "lofi_music",
+        "coffee_shop",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "airplane",
+      "source_url": "https://softly.cc/zh/sounds-for/airplane/",
+      "recommended_maskers": [
+        "brown_noise",
+        "pink_noise",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "anxiety-relief",
+      "source_url": "https://softly.cc/zh/sounds-for/anxiety-relief/",
+      "recommended_maskers": [
+        "ocean_waves",
+        "rain_stable",
+        "forest_ambience"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "baby-colic",
+      "source_url": "https://softly.cc/zh/sounds-for/baby-colic/",
+      "recommended_maskers": [
+        "white_noise",
+        "rain_stable",
+        "pink_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "baby-sleep",
+      "source_url": "https://softly.cc/zh/sounds-for/baby-sleep/",
+      "recommended_maskers": [
+        "white_noise",
+        "pink_noise",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "blogging",
+      "source_url": "https://softly.cc/zh/sounds-for/blogging/",
+      "recommended_maskers": [
+        "coffee_shop",
+        "lofi_music",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "brainstorming",
+      "source_url": "https://softly.cc/zh/sounds-for/brainstorming/",
+      "recommended_maskers": [
+        "coffee_shop",
+        "lofi_music",
+        "ocean_waves"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "breaks",
+      "source_url": "https://softly.cc/zh/sounds-for/breaks/",
+      "recommended_maskers": [
+        "forest_ambience",
+        "ocean_waves",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "breakup-insomnia",
+      "source_url": "https://softly.cc/zh/sounds-for/breakup-insomnia/",
+      "recommended_maskers": [
+        "rain_stable",
+        "ocean_waves",
+        "brown_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "breathing",
+      "source_url": "https://softly.cc/zh/sounds-for/breathing/",
+      "recommended_maskers": [
+        "ocean_waves",
+        "rain_stable",
+        "forest_ambience"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "chronic-pain",
+      "source_url": "https://softly.cc/zh/sounds-for/chronic-pain/",
+      "recommended_maskers": [
+        "rain_stable",
+        "ocean_waves",
+        "pink_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "cleaning",
+      "source_url": "https://softly.cc/zh/sounds-for/cleaning/",
+      "recommended_maskers": [
+        "lofi_music",
+        "coffee_shop",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "coding",
+      "source_url": "https://softly.cc/zh/sounds-for/coding/",
+      "recommended_maskers": [
+        "brown_noise",
+        "lofi_music",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "commuting",
+      "source_url": "https://softly.cc/zh/sounds-for/commuting/",
+      "recommended_maskers": [
+        "rain_stable",
+        "brown_noise",
+        "forest_ambience"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "construction-noise",
+      "source_url": "https://softly.cc/zh/sounds-for/construction-noise/",
+      "recommended_maskers": [
+        "white_noise",
+        "brown_noise",
+        "thunderstorm"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "content-creation",
+      "source_url": "https://softly.cc/zh/sounds-for/content-creation/",
+      "recommended_maskers": [
+        "coffee_shop",
+        "lofi_music",
+        "brown_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "cooking",
+      "source_url": "https://softly.cc/zh/sounds-for/cooking/",
+      "recommended_maskers": [
+        "coffee_shop",
+        "lofi_music",
+        "fireplace"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "cool-down",
+      "source_url": "https://softly.cc/zh/sounds-for/cool-down/",
+      "recommended_maskers": [
+        "ocean_waves",
+        "forest_ambience",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "crafting",
+      "source_url": "https://softly.cc/zh/sounds-for/crafting/",
+      "recommended_maskers": [
+        "fireplace",
+        "rain_stable",
+        "lofi_music"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "data-analysis",
+      "source_url": "https://softly.cc/zh/sounds-for/data-analysis/",
+      "recommended_maskers": [
+        "pink_noise",
+        "brown_noise",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "deep-work",
+      "source_url": "https://softly.cc/zh/sounds-for/deep-work/",
+      "recommended_maskers": [
+        "brown_noise",
+        "pink_noise",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "design",
+      "source_url": "https://softly.cc/zh/sounds-for/design/",
+      "recommended_maskers": [
+        "lofi_music",
+        "coffee_shop",
+        "brown_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "dog-anxiety",
+      "source_url": "https://softly.cc/zh/sounds-for/dog-anxiety/",
+      "recommended_maskers": [
+        "lofi_music",
+        "rain_stable",
+        "brown_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "dorm-room",
+      "source_url": "https://softly.cc/zh/sounds-for/dorm-room/",
+      "recommended_maskers": [
+        "brown_noise",
+        "lofi_music",
+        "pink_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "drawing",
+      "source_url": "https://softly.cc/zh/sounds-for/drawing/",
+      "recommended_maskers": [
+        "lofi_music",
+        "coffee_shop",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "email",
+      "source_url": "https://softly.cc/zh/sounds-for/email/",
+      "recommended_maskers": [
+        "lofi_music",
+        "coffee_shop",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "exam-anxiety",
+      "source_url": "https://softly.cc/zh/sounds-for/exam-anxiety/",
+      "recommended_maskers": [
+        "ocean_waves",
+        "pink_noise",
+        "lofi_music"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "exam-prep",
+      "source_url": "https://softly.cc/zh/sounds-for/exam-prep/",
+      "recommended_maskers": [
+        "pink_noise",
+        "brown_noise",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "focus",
+      "source_url": "https://softly.cc/zh/sounds-for/focus/",
+      "recommended_maskers": [
+        "brown_noise",
+        "lofi_music",
+        "pink_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "gaming",
+      "source_url": "https://softly.cc/zh/sounds-for/gaming/",
+      "recommended_maskers": [
+        "brown_noise",
+        "lofi_music",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "grief",
+      "source_url": "https://softly.cc/zh/sounds-for/grief/",
+      "recommended_maskers": [
+        "rain_stable",
+        "fireplace",
+        "forest_ambience"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "homework",
+      "source_url": "https://softly.cc/zh/sounds-for/homework/",
+      "recommended_maskers": [
+        "lofi_music",
+        "rain_stable",
+        "coffee_shop"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "hot-weather",
+      "source_url": "https://softly.cc/zh/sounds-for/hot-weather/",
+      "recommended_maskers": [
+        "rain_stable",
+        "ocean_waves",
+        "white_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "hotel-room",
+      "source_url": "https://softly.cc/zh/sounds-for/hotel-room/",
+      "recommended_maskers": [
+        "rain_stable",
+        "pink_noise",
+        "brown_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "insomnia",
+      "source_url": "https://softly.cc/zh/sounds-for/insomnia/",
+      "recommended_maskers": [
+        "rain_stable",
+        "pink_noise",
+        "brown_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "jet-lag",
+      "source_url": "https://softly.cc/zh/sounds-for/jet-lag/",
+      "recommended_maskers": [
+        "pink_noise",
+        "rain_stable",
+        "forest_ambience"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "journaling",
+      "source_url": "https://softly.cc/zh/sounds-for/journaling/",
+      "recommended_maskers": [
+        "rain_stable",
+        "fireplace",
+        "forest_ambience"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "knitting",
+      "source_url": "https://softly.cc/zh/sounds-for/knitting/",
+      "recommended_maskers": [
+        "fireplace",
+        "rain_stable",
+        "coffee_shop"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "language-learning",
+      "source_url": "https://softly.cc/zh/sounds-for/language-learning/",
+      "recommended_maskers": [
+        "pink_noise",
+        "rain_stable",
+        "brown_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "meal-prep",
+      "source_url": "https://softly.cc/zh/sounds-for/meal-prep/",
+      "recommended_maskers": [
+        "lofi_music",
+        "coffee_shop",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "meditation",
+      "source_url": "https://softly.cc/zh/sounds-for/meditation/",
+      "recommended_maskers": [
+        "ocean_waves",
+        "forest_ambience",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "meetings-background",
+      "source_url": "https://softly.cc/zh/sounds-for/meetings-background/",
+      "recommended_maskers": [
+        "forest_ambience",
+        "ocean_waves",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "memorisation",
+      "source_url": "https://softly.cc/zh/sounds-for/memorisation/",
+      "recommended_maskers": [
+        "pink_noise",
+        "forest_ambience",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "migraine",
+      "source_url": "https://softly.cc/zh/sounds-for/migraine/",
+      "recommended_maskers": [
+        "pink_noise",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "napping",
+      "source_url": "https://softly.cc/zh/sounds-for/napping/",
+      "recommended_maskers": [
+        "rain_stable",
+        "pink_noise",
+        "ocean_waves"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "new-baby",
+      "source_url": "https://softly.cc/zh/sounds-for/new-baby/",
+      "recommended_maskers": [
+        "pink_noise",
+        "rain_stable",
+        "ocean_waves"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "night-shift",
+      "source_url": "https://softly.cc/zh/sounds-for/night-shift/",
+      "recommended_maskers": [
+        "brown_noise",
+        "rain_stable",
+        "pink_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "noisy-apartment",
+      "source_url": "https://softly.cc/zh/sounds-for/noisy-apartment/",
+      "recommended_maskers": [
+        "brown_noise",
+        "rain_stable",
+        "pink_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "noisy-neighbours",
+      "source_url": "https://softly.cc/zh/sounds-for/noisy-neighbours/",
+      "recommended_maskers": [
+        "brown_noise",
+        "thunderstorm",
+        "white_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "open-office",
+      "source_url": "https://softly.cc/zh/sounds-for/open-office/",
+      "recommended_maskers": [
+        "brown_noise",
+        "pink_noise",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "painting",
+      "source_url": "https://softly.cc/zh/sounds-for/painting/",
+      "recommended_maskers": [
+        "coffee_shop",
+        "ocean_waves",
+        "lofi_music"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "panic-attacks",
+      "source_url": "https://softly.cc/zh/sounds-for/panic-attacks/",
+      "recommended_maskers": [
+        "ocean_waves",
+        "rain_stable",
+        "fireplace"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "planning",
+      "source_url": "https://softly.cc/zh/sounds-for/planning/",
+      "recommended_maskers": [
+        "coffee_shop",
+        "lofi_music",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "postpartum",
+      "source_url": "https://softly.cc/zh/sounds-for/postpartum/",
+      "recommended_maskers": [
+        "rain_stable",
+        "ocean_waves",
+        "pink_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "presentations",
+      "source_url": "https://softly.cc/zh/sounds-for/presentations/",
+      "recommended_maskers": [
+        "coffee_shop",
+        "lofi_music",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "productivity",
+      "source_url": "https://softly.cc/zh/sounds-for/productivity/",
+      "recommended_maskers": [
+        "coffee_shop",
+        "lofi_music",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "ptsd-nightmares",
+      "source_url": "https://softly.cc/zh/sounds-for/ptsd-nightmares/",
+      "recommended_maskers": [
+        "rain_stable",
+        "forest_ambience",
+        "pink_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "reading",
+      "source_url": "https://softly.cc/zh/sounds-for/reading/",
+      "recommended_maskers": [
+        "brown_noise",
+        "rain_stable",
+        "coffee_shop"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "remote-work",
+      "source_url": "https://softly.cc/zh/sounds-for/remote-work/",
+      "recommended_maskers": [
+        "coffee_shop",
+        "lofi_music",
+        "brown_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "running",
+      "source_url": "https://softly.cc/zh/sounds-for/running/",
+      "recommended_maskers": [
+        "lofi_music",
+        "rain_stable",
+        "brown_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "sensory-overload",
+      "source_url": "https://softly.cc/zh/sounds-for/sensory-overload/",
+      "recommended_maskers": [
+        "brown_noise",
+        "rain_stable",
+        "pink_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "shared-room",
+      "source_url": "https://softly.cc/zh/sounds-for/shared-room/",
+      "recommended_maskers": [
+        "pink_noise",
+        "brown_noise",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "sleeping",
+      "source_url": "https://softly.cc/zh/sounds-for/sleeping/",
+      "recommended_maskers": [
+        "rain_stable",
+        "pink_noise",
+        "brown_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "snoring-partner",
+      "source_url": "https://softly.cc/zh/sounds-for/snoring-partner/",
+      "recommended_maskers": [
+        "pink_noise",
+        "brown_noise",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "street-noise",
+      "source_url": "https://softly.cc/zh/sounds-for/street-noise/",
+      "recommended_maskers": [
+        "brown_noise",
+        "rain_stable",
+        "pink_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "stretching",
+      "source_url": "https://softly.cc/zh/sounds-for/stretching/",
+      "recommended_maskers": [
+        "ocean_waves",
+        "forest_ambience",
+        "lofi_music"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "study-burnout",
+      "source_url": "https://softly.cc/zh/sounds-for/study-burnout/",
+      "recommended_maskers": [
+        "forest_ambience",
+        "ocean_waves",
+        "lofi_music"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "studying",
+      "source_url": "https://softly.cc/zh/sounds-for/studying/",
+      "recommended_maskers": [
+        "pink_noise",
+        "lofi_music",
+        "coffee_shop"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "tax-prep",
+      "source_url": "https://softly.cc/zh/sounds-for/tax-prep/",
+      "recommended_maskers": [
+        "lofi_music",
+        "brown_noise",
+        "coffee_shop"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "therapy-waiting-room",
+      "source_url": "https://softly.cc/zh/sounds-for/therapy-waiting-room/",
+      "recommended_maskers": [
+        "rain_stable",
+        "forest_ambience",
+        "pink_noise"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "tinnitus-masking",
+      "source_url": "https://softly.cc/zh/sounds-for/tinnitus-masking/",
+      "recommended_maskers": [
+        "white_noise",
+        "pink_noise",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "tinnitus",
+      "source_url": "https://softly.cc/zh/sounds-for/tinnitus/",
+      "recommended_maskers": [
+        "pink_noise",
+        "rain_stable",
+        "forest_ambience"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "upstairs-neighbours",
+      "source_url": "https://softly.cc/zh/sounds-for/upstairs-neighbours/",
+      "recommended_maskers": [
+        "brown_noise",
+        "rain_stable",
+        "fireplace"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "winding-down",
+      "source_url": "https://softly.cc/zh/sounds-for/winding-down/",
+      "recommended_maskers": [
+        "fireplace",
+        "rain_stable",
+        "ocean_waves"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "winter-darkness",
+      "source_url": "https://softly.cc/zh/sounds-for/winter-darkness/",
+      "recommended_maskers": [
+        "forest_ambience",
+        "fireplace",
+        "rain_stable"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "work-stress",
+      "source_url": "https://softly.cc/zh/sounds-for/work-stress/",
+      "recommended_maskers": [
+        "forest_ambience",
+        "fireplace",
+        "ocean_waves"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "writing",
+      "source_url": "https://softly.cc/zh/sounds-for/writing/",
+      "recommended_maskers": [
+        "coffee_shop",
+        "rain_stable",
+        "fireplace"
+      ],
+      "via_headings": true
+    },
+    {
+      "scenario": "yoga",
+      "source_url": "https://softly.cc/zh/sounds-for/yoga/",
+      "recommended_maskers": [
+        "ocean_waves",
+        "forest_ambience",
+        "fireplace"
+      ],
+      "via_headings": true
+    }
+  ]
+}
