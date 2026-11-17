@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>DAC 往返听感抽检</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #eee; background: #14213d; }
+  .card { background: #1f2f52; border-radius: 12px; padding: 20px; margin: 14px 0; }
+  button { font-size: 16px; padding: 10px 22px; margin: 6px 4px; border-radius: 8px; border: 1px solid #4a5f8f;
+           background: #2b3f6b; color: #fff; cursor: pointer; }
+  button.primary { background: #7b5cff; }
+  button.choice { min-width: 200px; }
+  button.choice.selected { background: #7b5cff; border-color: #fff; }
+  button:disabled { opacity: .4; cursor: default; }
+  .bar { height: 6px; background: #0d1526; border-radius: 3px; margin: 8px 0; }
+  .bar > div { height: 100%; background: #7b5cff; border-radius: 3px; }
+  .note { color: #9fb0d0; font-size: 14px; }
+  textarea { width: 100%; box-sizing: border-box; background: #0d1526; color: #eee; border: 1px solid #4a5f8f; border-radius: 6px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  td, th { border-bottom: 1px solid #34446b; padding: 6px; text-align: left; }
+  .right { color: #4ade80; } .wrong { color: #f87171; } .unsure { color: #facc15; }
+</style>
+</head>
+<body>
+<h1>DAC 24kHz 往返听感抽检</h1>
+<div id="intro" class="card">
+  <p>共 <b id="n-trials"></b> 题。每题两条音频 A / B,<b>其中一条是原始录音,另一条是 DAC 编解码后的重建</b>。</p>
+  <p>任务:判断<b>哪一条是原始录音</b>。可以反复播放、切换 A/B。<b>分不出来就选「无法分辨」</b>——对 DAC 来说,分不出来是好结果。</p>
+  <p class="note">建议戴耳机、安静环境。做完点「提交」,结果会自动保存到服务器。</p>
+  <button id="btn-start" class="primary">开始测试</button>
+  <p id="load-status" class="note"></p>
+</div>
+
+<div id="trial" class="card" style="display:none">
+  <div class="bar"><div id="progress"></div></div>
+  <p class="note">第 <span id="t-idx"></span> / <span id="t-total"></span> 题 · <span id="t-cat"></span></p>
+  <h2>哪一条是原始录音?</h2>
+  <div>
+    <button id="play-a">▶ 播放 A</button>
+    <button id="play-b">▶ 播放 B</button>
+    <button id="stop-audio">■ 停止</button>
+  </div>
+  <div>
+    <button class="choice" data-v="a">A 是原始</button>
+    <button class="choice" data-v="b">B 是原始</button>
+    <button class="choice" data-v="unsure">无法分辨</button>
+  </div>
+  <p><textarea id="comment" rows="2" placeholder="可选:描述你听到的差异(如金属感、高频缺失、底噪)"></textarea></p>
+  <button id="btn-next" class="primary" disabled>下一题</button>
+</div>
+
+<div id="done" class="card" style="display:none">
+  <h2>完成</h2>
+  <p id="score-line"></p>
+  <details><summary>查看答案(做完才看)</summary><div id="answers"></div></details>
+  <p class="note" id="save-note">提交中…</p>
+  <button onclick="location.reload()">再来一轮</button>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let manifest = null, order = [], current = -1;
+let responses = [];   // {id, chose, answer, correct, comment, a, b}
+
+async function init() {
+  const res = await fetch("manifest.json");
+  manifest = await res.json();
+  $("n-trials").textContent = manifest.trials.length;
+  order = manifest.trials.map((_, i) => i).sort(() => Math.random() - 0.5);
+  $("load-status").textContent = "已加载 " + manifest.trials.length + " 题";
+  $("btn-start").disabled = false;
+}
+
+function play(which) {
+  const t = manifest.trials[order[current]];
+  const audio = new Audio(t[which === "a" ? "a" : "b"]);
+  audio.play();
+  window._audio = audio;
+}
+$("play-a").onclick = () => { stopAudio(); play("a"); };
+$("play-b").onclick = () => { stopAudio(); play("b"); };
+function stopAudio() { if (window._audio) { window._audio.pause(); window._audio = null; } }
+$("stop-audio").onclick = stopAudio;
+
+$("btn-start").onclick = () => {
+  $("intro").style.display = "none";
+  $("trial").style.display = "block";
+  current = -1; nextTrial();
+};
+
+document.querySelectorAll(".choice").forEach(btn => btn.onclick = () => {
+  document.querySelectorAll(".choice").forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+  $("btn-next").disabled = false;
+});
+
+function nextTrial() {
+  stopAudio();
+  if (current >= 0) saveCurrent();
+  current += 1;
+  if (current >= order.length) { finish(); return; }
+  const t = manifest.trials[order[current]];
+  $("t-idx").textContent = current + 1;
+  $("t-total").textContent = order.length;
+  $("t-cat").textContent = "类别:" + t.category;
+  $("progress").style.width = (100 * current / order.length) + "%";
+  document.querySelectorAll(".choice").forEach(b => b.classList.remove("selected"));
+  $("comment").value = "";
+  $("btn-next").disabled = true;
+  $("btn-next").textContent = current + 1 === order.length ? "提交" : "下一题";
+}
+
+function saveCurrent() {
+  const t = manifest.trials[order[current]];
+  const chose = document.querySelector(".choice.selected").dataset.v;
+  responses.push({
+    id: t.id, category: t.category, a: t.a, b: t.b,
+    chose, answer: t.answer,
+    correct: chose === "unsure" ? null : chose === t.answer,
+    comment: $("comment").value.trim(),
+  });
+}
+
+function finish() {
+  stopAudio();
+  $("trial").style.display = "none";
+  $("done").style.display = "block";
+  const decided = responses.filter(r => r.correct !== null);
+  const right = decided.filter(r => r.correct).length;
+  const unsure = responses.length - decided.length;
+  $("score-line").innerHTML =
+    `能分辨:<b>${decided.length}</b> 题,其中答对 <b>${right}</b> 题;` +
+    `无法分辨:<b>${unsure}</b> 题。<br>` +
+    (right <= decided.length / 2
+      ? "<span class='right'>答对率不超过 50%:听感上与原始录音不可区分,DAC 重建通过抽检。</span>"
+      : "<span class='wrong'>答对率显著高于 50%:重建可被分辨,需要检查伪影来源。</span>");
+  $("answers").innerHTML = "<table><tr><th>素材</th><th>你的选择</th><th>答案</th><th>结果</th><th>备注</th></tr>" +
+    responses.map(r => {
+      const cls = r.correct === null ? "unsure" : (r.correct ? "right" : "wrong");
+      const res = r.correct === null ? "无法分辨" : (r.correct ? "正确" : "错误");
+      return `<tr><td>${r.id}</td><td>${r.chose.toUpperCase()}</td><td>${r.answer.toUpperCase()}</td><td class="${cls}">${res}</td><td>${r.comment || ""}</td></tr>`;
+    }).join("") + "</table>";
+
+  fetch("/results", { method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ test: "dac_roundtrip_ab", date: new Date().toISOString(),
+                           decided: decided.length, correct: right, unsure, responses }) })
+    .then(r => r.json())
+    .then(() => $("save-note").textContent = "已保存到服务器。")
+    .catch(() => $("save-note").textContent = "保存失败:请把上面的答案表截图留档。");
+}
+
+$("btn-next").onclick = nextTrial;
+init();
+</script>
+</body>
+</html>
